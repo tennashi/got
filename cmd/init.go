@@ -30,14 +30,6 @@ func doInit(c *cobra.Command, args []string) {
 		}
 		c.Println("got:", gotFilePath, "created")
 	}
-
-	configDirPath := filepath.Join(curDir, "config")
-	if err := os.Mkdir(configDirPath, 0755); err != nil {
-		c.Println(err)
-	} else {
-		c.Println("got:", configDirPath, "created")
-	}
-
 }
 
 func init() {
