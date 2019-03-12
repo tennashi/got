@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -21,6 +23,7 @@ var (
 )
 
 var cfgFile string
+var globalConfig = viper.New()
 
 var rootCmd = &cobra.Command{
 	Use:   "got [command]",
@@ -31,35 +34,43 @@ This application is a tool to manage your (local or remote) dotfiles repository.
 
 // Execute is entry point
 func Execute() {
+	rootCmd.SetOutput(os.Stdout)
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		rootCmd.SetOutput(os.Stderr)
+		rootCmd.Println(err)
 		os.Exit(1)
 	}
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.app.yaml)")
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.got/config.yaml)")
 }
 
 func initConfig() {
 	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
+		globalConfig.SetConfigFile(cfgFile)
 	} else {
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
+			rootCmd.Println(err)
 			os.Exit(1)
 		}
 
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".app")
+		xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
+		xdgConfigDirs := os.Getenv("XDG_CONFIG_DIRS")
+
+		globalConfig.SetConfigName("config")
+		globalConfig.AddConfigPath(filepath.Join(xdgConfigHome, "got"))
+		for _, dir := range strings.Split(xdgConfigDirs, fmt.Sprintf("%c", filepath.ListSeparator)) {
+			globalConfig.AddConfigPath(filepath.Join(dir, "got"))
+		}
+		globalConfig.AddConfigPath(filepath.Join(home, ".config", "got"))
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	globalConfig.AutomaticEnv() // read in environment variables that match
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := globalConfig.ReadInConfig(); err == nil {
+		rootCmd.Println("Using config file:", globalConfig.ConfigFileUsed())
 	}
 }

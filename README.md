@@ -1,2 +1,2 @@
 # got
-dotfiles and packages manager written in Go.
+dotfiles manager written in Go.

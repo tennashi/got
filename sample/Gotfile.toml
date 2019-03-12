@@ -1,0 +1,12 @@
+[[dotfile]]
+  dest = "~/.compton.conf"
+  src = "conpton.conf"
+
+[[dotfile]]
+  dest = "~/.bashrc"
+  src = "bashrc"
+
+[[dotfile]]
+  dest = "~/.xmonad"
+  src = "xmonad"
+
