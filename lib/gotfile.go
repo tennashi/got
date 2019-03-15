@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/viper"
 )
 
@@ -13,14 +15,14 @@ type DotFile struct {
 	Src  string
 }
 
-func InitGotFile(path string) (*GotFile, error) {
-	v := viper.New()
-	v.SetConfigFile(path)
-	if err := v.ReadInConfig(); err != nil {
+func InitGotFile(dirPath string) (*GotFile, error) {
+	path := filepath.Join(dirPath, "Gotfile.toml")
+	viper.SetConfigFile(path)
+	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
 	}
 
 	gotFile := &GotFile{}
-	v.Unmarshal(gotFile)
+	viper.Unmarshal(gotFile)
 	return gotFile, nil
 }
