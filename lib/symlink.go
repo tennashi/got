@@ -13,13 +13,13 @@ type SymLink struct {
 	Dest string
 }
 
-func NewSymLink(dirPath string, dotFile DotFile) (*SymLink, error) {
-	dest, err := ExpandPath(dotFile.Dest)
+func NewSymLink(dirPath string, dotfile Dotfile) (*SymLink, error) {
+	dest, err := ExpandPath(dotfile.Dest)
 	if err != nil {
 		return nil, err
 	}
 	symLink := &SymLink{
-		Src:  filepath.Join(dirPath, dotFile.Src),
+		Src:  filepath.Join(dirPath, dotfile.Src),
 		Dest: dest,
 	}
 	if err := symLink.check(); err != nil {

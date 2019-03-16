@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/tennashi/got/lib"
 )
 
@@ -18,12 +17,12 @@ func NewSyncCmd() *cobra.Command {
 }
 
 func doSync(c *cobra.Command, args []string) error {
-	dotfileConfig, err := setDotfileConfig(globalConfig, args)
+	dotfileConfig, err := setDotfileRepo(globalConfig, args)
 	if err != nil {
 		if err.Error() == "config file unloaded" {
 			c.SetOutput(os.Stderr)
 			c.Println("Config file unloaded.")
-			c.Println("Please\n\t'got -c /path/to/config.toml sync'\nor\n\t'got sync https://your.remote.repository/dotfiles.git /path/to/dotfiles'.\n")
+			c.Println("Please\n\t'got -c /path/to/config.toml sync'\nor\n\t'got sync https://your.remote.repository/dotfiles.git /path/to/dotfiles'.")
 			c.Usage()
 		}
 		return err
@@ -40,13 +39,13 @@ func doSync(c *cobra.Command, args []string) error {
 		c.Println("git:", err)
 	}
 
-	gotFile, err := lib.InitGotFile(localDir)
+	gotfile, err := lib.InitGotfile(localDir)
 	if err != nil {
 		return err
 	}
 
-	for _, dotFile := range gotFile.DotFile {
-		symLink, err := lib.NewSymLink(localDir, dotFile)
+	for _, dotfile := range gotfile.Dotfile {
+		symLink, err := lib.NewSymLink(localDir, dotfile)
 		if err != nil {
 			c.SetOutput(os.Stderr)
 			c.Println("symlink:", err)
@@ -65,25 +64,25 @@ type dotfileRepo struct {
 	localDir  string
 }
 
-func setDotfileConfig(config *viper.Viper, args []string) (*dotfileRepo, error) {
+func setDotfileRepo(config *lib.Config, args []string) (*dotfileRepo, error) {
 	switch len(args) {
 	case 0:
-		if config.ConfigFileUsed() == "" {
+		if config == nil {
 			return nil, errors.New("config file unloaded")
 		}
-		localDir, err := lib.ExpandPath(config.GetString("dotfiles.local"))
+		localDir, err := lib.ExpandPath(config.Dotfiles.Local)
 		if err != nil {
 			return nil, err
 		}
 		return &dotfileRepo{
-			remoteURL: config.GetString("dotfiles.remote"),
+			remoteURL: config.Dotfiles.Remote,
 			localDir:  localDir,
 		}, nil
 	case 1:
-		if config.ConfigFileUsed() == "" {
+		if config == nil {
 			return nil, errors.New("config file unloaded")
 		}
-		localDir, err := lib.ExpandPath(config.GetString("dotfiles.local"))
+		localDir, err := lib.ExpandPath(config.Dotfiles.Local)
 		if err != nil {
 			return nil, err
 		}

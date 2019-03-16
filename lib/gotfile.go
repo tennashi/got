@@ -1,28 +1,42 @@
 package lib
 
 import (
+	"os"
 	"path/filepath"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
-type GotFile struct {
-	DotFile []DotFile
+type Gotfile struct {
+	Dotfile []Dotfile
 }
 
-type DotFile struct {
+type Dotfile struct {
 	Dest string
 	Src  string
 }
 
-func InitGotFile(dirPath string) (*GotFile, error) {
+func InitGotfile(dirPath string) (*Gotfile, error) {
 	path := filepath.Join(dirPath, "Gotfile.toml")
 	viper.SetConfigFile(path)
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
 	}
 
-	gotFile := &GotFile{}
-	viper.Unmarshal(gotFile)
-	return gotFile, nil
+	gotfile := &Gotfile{}
+	viper.Unmarshal(gotfile)
+	return gotfile, nil
+}
+
+func MakeGotfile(dirPath string) error {
+	gotfilePath := filepath.Join(dirPath, "Gotfile.toml")
+	if _, err := os.Stat(gotfilePath); err == nil {
+		return errors.New("file exist")
+	} else {
+		if _, err := os.Create(gotfilePath); err != nil {
+			return err
+		}
+	}
+	return nil
 }

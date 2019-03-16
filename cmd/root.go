@@ -1,14 +1,10 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/tennashi/got/lib"
 )
 
 // AppVer is application version
@@ -23,7 +19,7 @@ var (
 )
 
 var cfgFile string
-var globalConfig = viper.New()
+var globalConfig *lib.Config
 
 var rootCmd = &cobra.Command{
 	Use:   "got [command]",
@@ -47,29 +43,9 @@ func init() {
 }
 
 func initConfig() {
-	if cfgFile != "" {
-		globalConfig.SetConfigFile(cfgFile)
-	} else {
-		home, err := homedir.Dir()
-		if err != nil {
-			rootCmd.Println(err)
-			os.Exit(1)
-		}
-
-		xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
-		xdgConfigDirs := os.Getenv("XDG_CONFIG_DIRS")
-
-		globalConfig.SetConfigName("config")
-		globalConfig.AddConfigPath(filepath.Join(xdgConfigHome, "got"))
-		for _, dir := range strings.Split(xdgConfigDirs, fmt.Sprintf("%c", filepath.ListSeparator)) {
-			globalConfig.AddConfigPath(filepath.Join(dir, "got"))
-		}
-		globalConfig.AddConfigPath(filepath.Join(home, ".config", "got"))
-	}
-
-	globalConfig.AutomaticEnv() // read in environment variables that match
-
-	if err := globalConfig.ReadInConfig(); err == nil {
-		rootCmd.Println("Using config file:", globalConfig.ConfigFileUsed())
+	var err error
+	globalConfig, err = lib.InitConfig(cfgFile)
+	if err != nil {
+		os.Exit(1)
 	}
 }
