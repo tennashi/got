@@ -1,6 +1,6 @@
 # got
-dotfiles manager written in Go.
-`got` automates the works:
+dotfiles manager written in Go.  
+`got` automates the following tasks:
 ```bash
 $ git clone https://github.com/your_name/dotfiles
 $ ln -s /path/to/your/dotfiles/bashrc ~/.bashrc
@@ -40,8 +40,7 @@ Load the config file in the following order.
 ```
 
 ## Gotfile
-Set source and destination of symlink in `Gotfile.toml`.
-
+Set source and destination of symlink in `Gotfile.toml`.  
 Put gotfile in `/path/to/your/dotfiles/Gotfile.toml`.
 
 ### Example
