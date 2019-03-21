@@ -21,6 +21,7 @@ $ got sync http://github.com/your_name/dotfiles /path/to/your/dotfiles
 # or if you want to overwrite config(default: ~/.config/got/config.toml)
 $ got sync -w http://github.com/your_name/dotfiles /path/to/our/dotfiles
 ```
+If a file exist in destination of symlink, skip creating the symlink.
 
 ## Config
 Set the location of your dotfiles repository in the config file.
