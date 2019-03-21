@@ -1,5 +1,12 @@
 # got
 dotfiles manager written in Go.
+`got` automates the works:
+```bash
+$ git clone https://github.com/your_name/dotfiles
+$ ln -s /path/to/your/dotfiles/bashrc ~/.bashrc
+$ ln -s /path/to/your/dotfiles/xmonad/ ~/.xmonad
+...
+```
 
 # Usage
 ## Install
