@@ -8,12 +8,16 @@ import (
 	"github.com/tennashi/got/lib"
 )
 
+var writeConfig bool
+
 func NewSyncCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "sync [remote repository [local directory]]",
 		Short: "clone your dotfiles repository",
 		RunE:  doSync,
 	}
+	cmd.Flags().BoolVarP(&writeConfig, "write", "w", false, "overwrite config with command args")
+	return cmd
 }
 
 func doSync(c *cobra.Command, args []string) error {
@@ -82,15 +86,30 @@ func setDotfileRepo(config *lib.Config, args []string) (*dotfileRepo, error) {
 		if config == nil {
 			return nil, errors.New("config file unloaded")
 		}
+		if writeConfig {
+			config.Dotfiles.Remote = args[0]
+			config.Write()
+		}
+
 		localDir, err := lib.ExpandPath(config.Dotfiles.Local)
 		if err != nil {
 			return nil, err
 		}
+
 		return &dotfileRepo{
 			remoteURL: args[0],
 			localDir:  localDir,
 		}, nil
 	case 2:
+		if writeConfig {
+			if config == nil {
+				config = &lib.Config{}
+			}
+			config.Dotfiles.Remote = args[0]
+			config.Dotfiles.Local = args[1]
+			config.Write()
+		}
+
 		localDir, err := lib.ExpandPath(args[1])
 		if err != nil {
 			return nil, err
