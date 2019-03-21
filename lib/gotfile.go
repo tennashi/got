@@ -4,11 +4,14 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
+var gotfileName = "Gotfile.toml"
+
 type Gotfile struct {
+	path    string
 	Dotfile []Dotfile
 }
 
@@ -18,25 +21,35 @@ type Dotfile struct {
 }
 
 func InitGotfile(dirPath string) (*Gotfile, error) {
-	path := filepath.Join(dirPath, "Gotfile.toml")
-	viper.SetConfigFile(path)
-	if err := viper.ReadInConfig(); err != nil {
+	gotfile := &Gotfile{}
+	path := filepath.Join(dirPath, gotfileName)
+	gotfile.setPath(path)
+	if err := gotfile.load(); err != nil {
 		return nil, err
 	}
 
-	gotfile := &Gotfile{}
-	viper.Unmarshal(gotfile)
 	return gotfile, nil
 }
 
 func MakeGotfile(dirPath string) error {
-	gotfilePath := filepath.Join(dirPath, "Gotfile.toml")
-	if _, err := os.Stat(gotfilePath); err == nil {
+	path := filepath.Join(dirPath, gotfileName)
+	if _, err := os.Stat(path); err == nil {
 		return errors.New("file exist")
 	} else {
-		if _, err := os.Create(gotfilePath); err != nil {
+		if _, err := os.Create(path); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (g *Gotfile) setPath(path string) {
+	g.path = path
+}
+
+func (g *Gotfile) load() error {
+	if _, err := toml.DecodeFile(g.path, g); err != nil {
+		return err
 	}
 	return nil
 }
