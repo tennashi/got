@@ -7,6 +7,8 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 )
 
+// ExpandPath is a wrapper for `filepath.Abs()`.
+// This function expand `~` to your home directory like `/home/you`.
 func ExpandPath(path string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {

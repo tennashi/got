@@ -10,6 +10,7 @@ import (
 
 var writeConfig bool
 
+// NewSyncCmd returns sync command.
 func NewSyncCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sync [remote repository [local directory]]",

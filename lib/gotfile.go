@@ -10,16 +10,19 @@ import (
 
 var gotfileName = "Gotfile.toml"
 
+// Gotfile represent Gotfile.
 type Gotfile struct {
 	path    string
 	Dotfile []Dotfile
 }
 
+// Dotfile have your dotfile path.
 type Dotfile struct {
 	Dest string
 	Src  string
 }
 
+// InitGotfile initialize Gotfile type from the dotfiles directory path.
 func InitGotfile(dirPath string) (*Gotfile, error) {
 	gotfile := &Gotfile{}
 	path := filepath.Join(dirPath, gotfileName)
@@ -31,14 +34,14 @@ func InitGotfile(dirPath string) (*Gotfile, error) {
 	return gotfile, nil
 }
 
+// MakeGotfile creates Gotfile.toml to the dirPath.
 func MakeGotfile(dirPath string) error {
 	path := filepath.Join(dirPath, gotfileName)
 	if _, err := os.Stat(path); err == nil {
 		return errors.New("file exist")
-	} else {
-		if _, err := os.Create(path); err != nil {
-			return err
-		}
+	}
+	if _, err := os.Create(path); err != nil {
+		return err
 	}
 	return nil
 }

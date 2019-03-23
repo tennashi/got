@@ -8,11 +8,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+// SymLink represent symbolic link.
 type SymLink struct {
 	Src  string
 	Dest string
 }
 
+// NewSymLink initialize SymLink.
+// The dest is absolute path of dotfile.Dest.
+// The src is /path/to/your/dotfiles/dotfile.Src.
+// This function returns an error if the file exists in the dest path
+// or the file does not exist in the src path.
 func NewSymLink(dirPath string, dotfile Dotfile) (*SymLink, error) {
 	dest, err := ExpandPath(dotfile.Dest)
 	if err != nil {
@@ -41,6 +47,7 @@ func (s *SymLink) check() error {
 	return nil
 }
 
+// Make symbolic links the src to the dest.
 func (s *SymLink) Make() error {
 	out, err := exec.Command("ln", "-s", s.Src, s.Dest).CombinedOutput()
 	if err != nil {

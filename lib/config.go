@@ -13,6 +13,7 @@ import (
 
 var configName = "config.toml"
 
+// Config represent config file.
 type Config struct {
 	paths    []string
 	usedPath string
@@ -20,11 +21,18 @@ type Config struct {
 	Dotfiles Dotfiles
 }
 
+// Dotfiles have the dotfile repository location.
 type Dotfiles struct {
 	Local  string
 	Remote string
 }
 
+// InitConfig initialize Config type.
+// This function tries to read settings in the following order:
+//   * The file specified by `-c` option.
+//   * $XDG_CONFIG_HOME/got/config.toml
+//   * $xdg_config_dir/got/config.toml ($xdg_config_dir is the path contained in $XDG_CONFIG_DIRS)
+//   * ~/.config/got/config.toml
 func InitConfig(cfgFile string) (*Config, error) {
 	config := &Config{}
 	if cfgFile != "" {
@@ -53,6 +61,8 @@ func InitConfig(cfgFile string) (*Config, error) {
 	return config, nil
 }
 
+// Write writes the current config to the currently used config file.
+// If command haven't read the config file, this method write the config to `~/.config/got/config.toml`.
 func (c *Config) Write() error {
 	if len(c.paths) == 0 {
 		home, err := homedir.Dir()

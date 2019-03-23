@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NewVersionCmd returns version command.
 func NewVersionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
