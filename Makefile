@@ -4,7 +4,7 @@ setup:
 	go get -u golang.org/x/tools/cmd/goimports
 
 lint:
-	go tool vet ./
+	go vet
 	golint -set_exit_status ./...
 
 fmt: lint
