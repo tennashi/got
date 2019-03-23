@@ -1,4 +1,5 @@
 setup:
+	go mod download
 	go get -u golang.org/x/lint/golint
 	go get -u golang.org/x/tools/cmd/goimports
 
@@ -9,7 +10,7 @@ lint:
 fmt: lint
 	goimports -w ./
 
-test:
+test: fmt
 	ENV=test go test -cover -race ./...
 
 build:
