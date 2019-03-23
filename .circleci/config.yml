@@ -2,7 +2,7 @@ version: 2.1
 
 executors:
   default:
-    working_directory: /go/src/github.com/tennashi/got
+    working_directory: ~/workdir
     docker:
       - image: circleci/golang:1.12
 
