@@ -12,9 +12,9 @@ import (
 // Builddate is date of build
 // Goversion is go version
 var (
-	AppVer    string
-	Hash      string
-	Builddate string
+	Version   string
+	Commit    string
+	Date      string
 	Goversion string
 )
 

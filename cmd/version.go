@@ -13,9 +13,9 @@ func NewVersionCmd() *cobra.Command {
 }
 
 func doVersion(c *cobra.Command, args []string) {
-	c.Println("version:", AppVer)
-	c.Println("commit hash:", Hash)
-	c.Println("build date:", Builddate)
+	c.Println("version:", Version)
+	c.Println("commit hash:", Commit)
+	c.Println("build date:", Date)
 	c.Println("go version:", Goversion)
 }
 

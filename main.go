@@ -4,15 +4,15 @@ import "github.com/tennashi/got/cmd"
 
 var (
 	version   string
-	hash      string
-	builddate string
+	commit    string
+	date      string
 	goversion string
 )
 
 func main() {
-	cmd.AppVer = version
-	cmd.Hash = hash
-	cmd.Builddate = builddate
+	cmd.Version = version
+	cmd.Commit = commit
+	cmd.Date = date
 	cmd.Goversion = goversion
 
 	cmd.Execute()
