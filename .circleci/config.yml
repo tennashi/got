@@ -52,19 +52,15 @@ jobs:
           command: curl -sL https://git.io/goreleaser | bash -s -- --rm-dist
 
 workflows:
-  setup_and_test:
-    jobs:
-      - setup
-      - test:
-          requires:
-            - setup
-  build_and_release:
+  test_and_release:
     jobs:
       - setup
       - test:
           requires:
             - setup
       - release:
+          requires:
+            - test
           filters:
             branches:
               ignore: /.*/
