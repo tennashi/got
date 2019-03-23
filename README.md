@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/tennashi/got/tree/master.svg?style=svg)](https://circleci.com/gh/tennashi/got/tree/master)
+
 # got
 dotfiles manager written in Go.  
 `got` automates the following tasks:
