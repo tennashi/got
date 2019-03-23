@@ -1,46 +1,46 @@
 version: 2.1
 
 executors:
-	default:
-		working_directory: ~/workspace
-		docker:
-			- image: circleci/golang:1.12
+  default:
+    working_directory: ~/workspace
+    docker:
+      - image: circleci/golang:1.12
 
 commands:
-	restore:
-		steps:
-			- restore_cache:
-					name: Restore dependence packages
-					key: cache-{{ checksum "go.sum" }}
-	save:
-		steps:
-			- save_cache:
-					name: Cache dependence packages
-					key: cache-{{ checksum "go.sum" }}
-					paths:
-						- /go/pkg/mod/cache
+  restore:
+    steps:
+      - restore_cache:
+          name: Restore dependence packages
+          key: cache-{{ checksum "go.sum" }}
+  save:
+    steps:
+      - save_cache:
+          name: Cache dependence packages
+          key: cache-{{ checksum "go.sum" }}
+          paths:
+            - /go/pkg/mod/cache
 
 jobs:
-	setup:
-		executor:
-			name: default
-	  steps:
-	  	- checkout
-	  	- restore
-	  	- run:
-	  			name: Install packages
-	  			command: make setup
-	  	- save
-	test:
-		executor:
-			name: default
-		steps:
-			- checkout
-			- restore
-			- run:
-					name: Run test
-					command: make test
-	  	- save
+  setup:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - restore
+      - run:
+          name: Install packages
+          command: make setup
+      - save
+  test:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - restore
+      - run:
+          name: Run test
+          command: make test
+      - save
   release:
     executor:
       name: default
@@ -52,12 +52,12 @@ jobs:
           command: curl -sL https://git.io/goreleaser | bash -s -- --rm-dist
 
 workflows:
-	setup_and_test:
-		jobs:
-			- setup
-			- test:
-  				requires:
-  					- setup
+  setup_and_test:
+    jobs:
+      - setup
+      - test:
+          requires:
+            - setup
   build_and_release:
     jobs:
       - setup
