@@ -57,10 +57,16 @@ jobs:
 workflows:
   test_and_release:
     jobs:
-      - setup
+      - setup:
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)(\.[0-9]+)/
       - test:
           requires:
             - setup
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)(\.[0-9]+)/
       - release:
           requires:
             - test
