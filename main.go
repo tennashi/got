@@ -1,12 +1,16 @@
 package main
 
-import "github.com/tennashi/got/cmd"
+import (
+	"runtime"
+
+	"github.com/tennashi/got/cmd"
+)
 
 var (
-	version   string
-	commit    string
-	date      string
-	goversion string
+	version   string = "dev"
+	commit    string = "none"
+	date      string = "none"
+	goversion string = runtime.Version()
 )
 
 func main() {
