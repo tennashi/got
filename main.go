@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	version   string = "dev"
-	commit    string = "none"
-	date      string = "none"
-	goversion string = runtime.Version()
+	version   = "dev"
+	commit    = "none"
+	date      = "none"
+	goversion = runtime.Version()
 )
 
 func main() {
