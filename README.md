@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/tennashi/got/tree/master.svg?style=svg)](https://circleci.com/gh/tennashi/got/tree/master)
+[![CircleCI](https://circleci.com/gh/tennashi/got/tree/master.svg?style=shield)](https://circleci.com/gh/tennashi/got/tree/master)
 
 # got
 dotfiles manager written in Go.  
