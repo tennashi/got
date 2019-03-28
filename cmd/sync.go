@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tennashi/got/lib"
+	got "github.com/tennashi/got/lib"
 )
 
 var writeConfig bool
@@ -33,24 +33,24 @@ func doSync(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	localDir, err := lib.ExpandPath(dotfileConfig.localDir)
+	localDir, err := got.ExpandPath(dotfileConfig.localDir)
 	if err != nil {
 		return err
 	}
 
-	git := lib.NewGit(dotfileConfig.remoteURL, localDir)
+	git := got.NewGit(dotfileConfig.remoteURL, localDir)
 	if err := git.Clone(); err != nil {
 		c.SetOutput(os.Stderr)
 		c.Println("git:", err)
 	}
 
-	gotfile, err := lib.InitGotfile(localDir)
+	gotfile, err := got.InitGotfile(localDir)
 	if err != nil {
 		return err
 	}
 
 	for _, dotfile := range gotfile.Dotfile {
-		symLink, err := lib.NewSymLink(localDir, dotfile)
+		symLink, err := got.NewSymLink(localDir, dotfile)
 		if err != nil {
 			c.SetOutput(os.Stderr)
 			c.Println("symlink:", err)
@@ -69,13 +69,13 @@ type dotfileRepo struct {
 	localDir  string
 }
 
-func setDotfileRepo(config *lib.Config, args []string) (*dotfileRepo, error) {
+func setDotfileRepo(config *got.Config, args []string) (*dotfileRepo, error) {
 	switch len(args) {
 	case 0:
 		if config == nil {
 			return nil, errors.New("config file unloaded")
 		}
-		localDir, err := lib.ExpandPath(config.Dotfiles.Local)
+		localDir, err := got.ExpandPath(config.Dotfiles.Local)
 		if err != nil {
 			return nil, err
 		}
@@ -92,7 +92,7 @@ func setDotfileRepo(config *lib.Config, args []string) (*dotfileRepo, error) {
 			config.Write()
 		}
 
-		localDir, err := lib.ExpandPath(config.Dotfiles.Local)
+		localDir, err := got.ExpandPath(config.Dotfiles.Local)
 		if err != nil {
 			return nil, err
 		}
@@ -104,14 +104,14 @@ func setDotfileRepo(config *lib.Config, args []string) (*dotfileRepo, error) {
 	case 2:
 		if writeConfig {
 			if config == nil {
-				config = &lib.Config{}
+				config = &got.Config{}
 			}
 			config.Dotfiles.Remote = args[0]
 			config.Dotfiles.Local = args[1]
 			config.Write()
 		}
 
-		localDir, err := lib.ExpandPath(args[1])
+		localDir, err := got.ExpandPath(args[1])
 		if err != nil {
 			return nil, err
 		}

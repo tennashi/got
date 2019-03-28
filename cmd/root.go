@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tennashi/got/lib"
+	got "github.com/tennashi/got/lib"
 )
 
 // AppVer is application version
@@ -19,7 +19,7 @@ var (
 )
 
 var cfgFile string
-var globalConfig *lib.Config
+var globalConfig *got.Config
 
 var rootCmd = &cobra.Command{
 	Use:   "got [command]",
@@ -44,7 +44,7 @@ func init() {
 
 func initConfig() {
 	var err error
-	globalConfig, err = lib.InitConfig(cfgFile)
+	globalConfig, err = got.InitConfig(cfgFile)
 	if err != nil {
 		os.Exit(1)
 	}
