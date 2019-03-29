@@ -35,23 +35,9 @@ type Dotfiles struct {
 //   * ~/.config/got/config.toml
 func InitConfig(cfgFile string) (*Config, error) {
 	config := &Config{}
-	if cfgFile != "" {
-		config.addPath(cfgFile)
-	} else {
-		home, err := homedir.Dir()
-		if err != nil {
-			return nil, err
-		}
 
-		if dir := os.Getenv("XDG_CONFIG_HOME"); dir != "" {
-			config.addPath(filepath.Join(dir, "got", configName))
-		}
-		if dirs := os.Getenv("XDG_CONFIG_DIRS"); dirs != "" {
-			for _, dir := range strings.Split(dirs, fmt.Sprintf("%c", filepath.ListSeparator)) {
-				config.addPath(filepath.Join(dir, "got", configName))
-			}
-		}
-		config.addPath(filepath.Join(home, ".config", "got", configName))
+	if err := config.setPaths(cfgFile); err != nil {
+		return nil, err
 	}
 
 	if err := config.load(); err != nil {
@@ -82,6 +68,28 @@ func (c *Config) Write() error {
 
 	if err := toml.NewEncoder(f).Encode(c); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (c *Config) setPaths(cfgFile string) error {
+	if cfgFile != "" {
+		c.addPath(cfgFile)
+	} else {
+		home, err := homedir.Dir()
+		if err != nil {
+			return err
+		}
+
+		if dir := os.Getenv("XDG_CONFIG_HOME"); dir != "" {
+			c.addPath(filepath.Join(dir, "got", configName))
+		}
+		if dirs := os.Getenv("XDG_CONFIG_DIRS"); dirs != "" {
+			for _, dir := range strings.Split(dirs, fmt.Sprintf("%c", filepath.ListSeparator)) {
+				c.addPath(filepath.Join(dir, "got", configName))
+			}
+		}
+		c.addPath(filepath.Join(home, ".config", "got", configName))
 	}
 	return nil
 }
