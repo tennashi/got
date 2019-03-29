@@ -1,0 +1,3 @@
+[dotfiles]
+local = "./"
+remote = "https://github.com/tennashi/dotfiles"
