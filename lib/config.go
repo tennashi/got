@@ -18,7 +18,8 @@ type Config struct {
 	paths    []string
 	usedPath string
 
-	Dotfiles Dotfiles
+	Dotfiles       Dotfiles
+	DefaultManager string `toml:"default_manager"`
 }
 
 // Dotfiles have the dotfile repository location.
