@@ -78,6 +78,7 @@ func TestConfig_addPath(t *testing.T) {
 			if !reflect.DeepEqual(get, tt.want) {
 				t.Fatalf("\n\tgot: %v\n\twant: %v", get, tt.want)
 			}
+			resetTestConfig()
 		})
 	}
 }

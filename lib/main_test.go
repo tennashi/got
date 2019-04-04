@@ -28,3 +28,7 @@ func initTestConfig() {
 	got.CaddPath(testConfig["valid"], filepath.Join("..", "testdata", "config_valid.golden"))
 	got.Cload(testConfig["valid"])
 }
+
+func resetTestConfig() {
+	initTestConfig()
+}
