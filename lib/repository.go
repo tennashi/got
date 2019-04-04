@@ -2,7 +2,6 @@ package got
 
 import (
 	"os"
-	"os/exec"
 
 	"github.com/pkg/errors"
 )
@@ -31,9 +30,10 @@ func (g *Git) Clone() error {
 	if _, err := os.Stat(g.Target); err == nil {
 		return errors.New("exist dotfile repository")
 	}
-	out, err := exec.Command("git", "clone", g.URL, g.Target).CombinedOutput()
+	c := NewCommand()
+	err := c.Run("git", "clone", g.URL, g.Target)
 	if err != nil {
-		return errors.Wrap(err, string(out))
+		return err
 	}
 	return nil
 }

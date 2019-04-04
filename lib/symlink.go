@@ -2,7 +2,6 @@ package got
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"github.com/pkg/errors"
@@ -49,9 +48,10 @@ func (s *SymLink) check() error {
 
 // Make symbolic links the src to the dest.
 func (s *SymLink) Make() error {
-	out, err := exec.Command("ln", "-s", s.Src, s.Dest).CombinedOutput()
+	c := NewCommand()
+	err := c.SURun("ln", "-s", s.Src, s.Dest)
 	if err != nil {
-		return errors.Wrap(err, string(out))
+		return err
 	}
 	return nil
 }
