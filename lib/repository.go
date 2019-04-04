@@ -2,13 +2,11 @@ package got
 
 import (
 	"os"
-
-	"github.com/pkg/errors"
 )
 
 // Repository defines the operation of VCS repository.
 type Repository interface {
-	Clone()
+	CloneOrPull()
 }
 
 // Git represent the git command.
@@ -25,12 +23,17 @@ func NewGit(url, target string) *Git {
 	}
 }
 
-// Clone clone the git repository from URL to Target.
-func (g *Git) Clone() error {
-	if _, err := os.Stat(g.Target); err == nil {
-		return errors.New("exist dotfile repository")
-	}
+// CloneOrPull clone the git repository from URL to Target.
+// When already exists the Target, this function executes git pull.
+func (g *Git) CloneOrPull() error {
 	c := NewCommand()
+	if _, err := os.Stat(g.Target); err == nil {
+		err := c.RunInDir(g.Target, "git", "pull", "origin", "master")
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 	err := c.Run("git", "clone", g.URL, g.Target)
 	if err != nil {
 		return err

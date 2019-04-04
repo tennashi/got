@@ -39,7 +39,7 @@ func doSync(c *cobra.Command, args []string) error {
 	}
 
 	git := got.NewGit(dotfileConfig.remoteURL, localDir)
-	if err := git.Clone(); err != nil {
+	if err := git.CloneOrPull(); err != nil {
 		c.SetOutput(os.Stderr)
 		c.Println("git:", err)
 	}

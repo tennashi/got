@@ -1,7 +1,6 @@
 package got
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -28,11 +27,21 @@ func NewCommand() *Command {
 // Run executes the command.
 func (c *Command) Run(command string, args ...string) error {
 	cmd := exec.Command(command, args...)
-	fmt.Println(cmd)
 	cmd.Stdin = c.Stdin
 	cmd.Stdout = c.Stdout
 	cmd.Stderr = c.Stderr
 	return cmd.Run()
+}
+
+// RunInDir executes the command in dir.
+func (c *Command) RunInDir(dir string, command string, args ...string) error {
+	cmd := exec.Command(command, args...)
+	cmd.Stdin = c.Stdin
+	cmd.Stdout = c.Stdout
+	cmd.Stderr = c.Stderr
+	cmd.Dir = dir
+	return cmd.Run()
+
 }
 
 // SURun executes the command with sudo.
