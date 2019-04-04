@@ -7,6 +7,7 @@ import (
 	got "github.com/tennashi/got/lib"
 )
 
+// NewGetCmd returns get command.
 func NewGetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get package_name [package_manager]",

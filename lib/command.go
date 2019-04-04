@@ -9,12 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Command has stdin/stdout/stderr.
 type Command struct {
 	Stdin  io.Reader
 	Stdout io.Writer
 	Stderr io.Writer
 }
 
+// NewCommand initialize Command with default stdin/stdout/stderr.
 func NewCommand() *Command {
 	return &Command{
 		Stdin:  os.Stdin,
@@ -23,6 +25,7 @@ func NewCommand() *Command {
 	}
 }
 
+// Run executes the command.
 func (c *Command) Run(command string, args ...string) error {
 	cmd := exec.Command(command, args...)
 	fmt.Println(cmd)
@@ -32,6 +35,7 @@ func (c *Command) Run(command string, args ...string) error {
 	return cmd.Run()
 }
 
+// SURun executes the command with sudo.
 func (c *Command) SURun(command string, args ...string) error {
 	if existSudo() {
 		execCmd := make([]string, len(args)+1)
