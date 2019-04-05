@@ -2,7 +2,7 @@ package got
 
 // Manager defines the operation of package manager.
 type Manager interface {
-	Install(name string) error
+	Install(names ...string) error
 }
 
 // NewManager initialize Manager from the command name.
@@ -18,7 +18,10 @@ func NewManager(manager string) Manager {
 type apt struct {
 }
 
-func (a *apt) Install(name string) error {
+func (a *apt) Install(names ...string) error {
 	c := NewCommand()
-	return c.SURun("apt-get", "install", name)
+	args := make([]string, len(names)+1)
+	args[0] = "install"
+	args = append(args, names...)
+	return c.SURun("apt-get", args...)
 }
