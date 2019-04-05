@@ -64,6 +64,7 @@ func (g *Gotfile) load() error {
 	return nil
 }
 
+// AddPackage add the package config to the Gotfile.
 func (g *Gotfile) AddPackage(name, manager string) error {
 	pkgs := struct {
 		Package []Package
@@ -88,6 +89,7 @@ func (g *Gotfile) AddPackage(name, manager string) error {
 	return nil
 }
 
+// AddDotfile add the dotfile config to the Gotfile.
 func (g *Gotfile) AddDotfile(src, dest string) error {
 	dotfiles := struct {
 		Dotfile []Dotfile
