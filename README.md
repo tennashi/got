@@ -43,10 +43,11 @@ $ got get apt sl
 This command installs `sl` as `apt` command and append the `sl` config to `Gotfile.toml`.
 ```toml
 ...
-# Autometional added
-[[package]]
-  name = "sl"
-  manager = "apt"
+[package]
+  [package.apt]
+    names = [
+      "sl", # Autometional added
+    ]
 ```
 
 If you set `default_manager` in `Gotfile.toml`, you can omit the manager you use.
