@@ -49,23 +49,19 @@ func doSync(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	pkgList := map[string][]string{}
-	for _, pkg := range gotfile.Package {
-		pkgList[pkg.Manager] = append(pkgList[pkg.Manager], pkg.Name)
-	}
-	for mgrName, pkgs := range pkgList {
+	for mgrName, pkg := range gotfile.Package {
 		manager := got.NewManager(mgrName)
 		if manager == nil {
 			return errors.New("unknown manager")
 		}
-		err := manager.Install(pkgs...)
+		err := manager.Install(pkg.Names...)
 		if err != nil {
 			return err
 		}
 	}
 
 	for _, dotfile := range gotfile.Dotfile {
-		symLink, err := got.NewSymLink(localDir, dotfile)
+		symLink, err := got.NewSymLink(localDir, *dotfile)
 		if err != nil {
 			c.SetOutput(os.Stderr)
 			c.Println("symlink:", err)

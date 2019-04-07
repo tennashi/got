@@ -1,6 +1,7 @@
 package got
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -13,20 +14,19 @@ var gotfileName = "Gotfile.toml"
 // Gotfile represent Gotfile.
 type Gotfile struct {
 	path    string
-	Dotfile []Dotfile
-	Package []Package
+	Dotfile []*Dotfile          `toml:"dotfile"`
+	Package map[string]*Package `toml:"package"`
 }
 
 // Dotfile has your dotfile path.
 type Dotfile struct {
-	Dest string
-	Src  string
+	Dest string `toml:"dest"`
+	Src  string `toml:"src"`
 }
 
 // Package has the package name and the package manager command name.
 type Package struct {
-	Name    string
-	Manager string
+	Names []string `toml:"names"`
 }
 
 // InitGotfile initialize Gotfile type from the dotfiles directory path.
@@ -64,52 +64,49 @@ func (g *Gotfile) load() error {
 	return nil
 }
 
-// AddPackage add the package config to the Gotfile.
-func (g *Gotfile) AddPackage(name, manager string) error {
-	pkgs := struct {
-		Package []Package
-	}{
-		Package: []Package{
-			{
-				Name:    name,
-				Manager: manager,
-			},
-		},
+func (g *Gotfile) save() error {
+	if err := os.Remove(g.path); err != nil {
+		return err
 	}
-	f, err := os.OpenFile(g.path, os.O_WRONLY|os.O_APPEND, 0644)
+	f, err := os.OpenFile(g.path, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
+		fmt.Println("hoge")
 		return err
 	}
 	defer f.Close()
-	f.WriteString("# automatically added\n")
-	if err := toml.NewEncoder(f).Encode(pkgs); err != nil {
+	if err := toml.NewEncoder(f).Encode(g); err != nil {
 		return err
 	}
-	f.WriteString("\n")
 	return nil
+}
+
+// AddPackage add the package config to the Gotfile.
+func (g *Gotfile) AddPackage(name, manager string) error {
+	if _, ok := g.Package[manager]; !ok {
+		g.Package = map[string]*Package{
+			manager: &Package{Names: []string{name}},
+		}
+	} else {
+		tmp := append(g.Package[manager].Names, name)
+		m := make(map[string]struct{})
+		unique := make([]string, 0, len(tmp))
+		for _, name := range tmp {
+			if _, ok := m[name]; !ok {
+				m[name] = struct{}{}
+				unique = append(unique, name)
+			}
+		}
+		g.Package[manager].Names = unique
+	}
+	return g.save()
 }
 
 // AddDotfile add the dotfile config to the Gotfile.
 func (g *Gotfile) AddDotfile(src, dest string) error {
-	dotfiles := struct {
-		Dotfile []Dotfile
-	}{
-		Dotfile: []Dotfile{
-			{
-				Src:  src,
-				Dest: dest,
-			},
-		},
+	dotfile := &Dotfile{
+		Src:  src,
+		Dest: dest,
 	}
-	f, err := os.OpenFile(g.path, os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	f.WriteString("# automatically added\n")
-	if err := toml.NewEncoder(f).Encode(dotfiles); err != nil {
-		return err
-	}
-	f.WriteString("\n")
-	return nil
+	g.Dotfile = append(g.Dotfile, dotfile)
+	return g.save()
 }

@@ -10,7 +10,7 @@ import (
 // NewGetCmd returns get command.
 func NewGetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get package_name [package_manager]",
+		Use:   "get [package_manager] package_name",
 		Short: "install package from package repository",
 		RunE:  doGet,
 		Args:  cobra.RangeArgs(1, 2),
@@ -19,15 +19,17 @@ func NewGetCmd() *cobra.Command {
 }
 
 func doGet(c *cobra.Command, args []string) error {
-	if globalConfig == nil {
-		return errors.New("config file unloaded")
-	}
-
 	var mgrName string
+	var pkgName string
 	if len(args) == 1 {
+		if globalConfig == nil {
+			return errors.New("config file unloaded")
+		}
 		mgrName = globalConfig.DefaultManager
+		pkgName = args[0]
 	} else {
-		mgrName = args[1]
+		mgrName = args[0]
+		pkgName = args[1]
 	}
 
 	manager := got.NewManager(mgrName)
@@ -35,10 +37,13 @@ func doGet(c *cobra.Command, args []string) error {
 		return errors.New("unknown manager")
 	}
 
-	pkgName := args[0]
 	err := manager.Install(pkgName)
 	if err != nil {
 		return err
+	}
+
+	if globalConfig == nil {
+		return nil
 	}
 	dotfilesDir, err := got.ExpandPath(globalConfig.Dotfiles.Local)
 	if err != nil {
