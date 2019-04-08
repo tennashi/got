@@ -35,7 +35,7 @@ func NewSymLink(dirPath string, dotfile Dotfile) (*SymLink, error) {
 
 func (s *SymLink) check() error {
 	if _, err := os.Stat(s.Dest); err == nil {
-		return errors.New("exist dest file")
+		return errors.New("exist " + s.Dest)
 	}
 
 	if info, err := os.Stat(s.Src); err != nil {

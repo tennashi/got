@@ -39,6 +39,7 @@ func doSync(c *cobra.Command, args []string) error {
 	}
 
 	git := got.NewGit(dotfileConfig.remoteURL, localDir)
+	c.Println("---clone dotfile repository---")
 	if err := git.CloneOrPull(); err != nil {
 		c.SetOutput(os.Stderr)
 		c.Println("git:", err)
@@ -49,6 +50,7 @@ func doSync(c *cobra.Command, args []string) error {
 		return err
 	}
 
+	c.Println("---install packages---")
 	for mgrName, pkg := range gotfile.Package {
 		manager := got.NewManager(mgrName)
 		if manager == nil {
@@ -60,6 +62,7 @@ func doSync(c *cobra.Command, args []string) error {
 		}
 	}
 
+	c.Println("---make symlinks---")
 	for _, dotfile := range gotfile.Dotfile {
 		symLink, err := got.NewSymLink(localDir, *dotfile)
 		if err != nil {
