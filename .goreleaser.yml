@@ -16,6 +16,22 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
+nfpm:
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    amd64: 64-bit
+    386: 32-bit
+  maintainer: Yuya OTA <yuya.gt@gmail.com>
+  description: dotfiles and packages manager written in Go.
+  license: MIT
+  formats:
+    - deb
+    - rpm
+  dependencies:
+    - git
+    - coreutils
 changelog:
   sort: asc
   filters:
