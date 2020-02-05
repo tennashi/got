@@ -1,4 +1,0 @@
-[dotfiles]
-  local = "~/Documents/dotfiles"
-  remote = "https://github.com/tennashi/dotfiles"
-
