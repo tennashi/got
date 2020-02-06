@@ -49,9 +49,13 @@ func (g *got) run(ctx context.Context, args []string) error {
 	if !ok {
 		subCmd = g.subCmds["help"]
 	}
-	return subCmd.run(ctx, args)
+	if err := subCmd.parse(args); err != nil {
+		return err
+	}
+	return subCmd.run(ctx)
 }
 
 type runner interface {
-	run(context.Context, []string) error
+	parse([]string) error
+	run(context.Context) error
 }

@@ -1,8 +1,8 @@
 package got
 
 import (
-	"context"
 	"fmt"
+	"io"
 	"runtime"
 )
 
@@ -13,18 +13,9 @@ var (
 	goversion = runtime.Version()
 )
 
-type versionCmd struct {
-	rootCmd *got
-}
-
-func newVersionCmd(rootCmd *got) *versionCmd {
-	return &versionCmd{rootCmd: rootCmd}
-}
-
-func (v *versionCmd) run(ctx context.Context, args []string) error {
-	fmt.Fprintf(v.rootCmd.IOStream.Out, "version: %v\n", version)
-	fmt.Fprintf(v.rootCmd.IOStream.Out, "commit hash: %v\n", commit)
-	fmt.Fprintf(v.rootCmd.IOStream.Out, "build date: %v\n", date)
-	fmt.Fprintf(v.rootCmd.IOStream.Out, "go version: %v\n", goversion)
-	return nil
+func printVersion(outStream io.Writer) {
+	fmt.Fprintf(outStream, "version: %v\n", version)
+	fmt.Fprintf(outStream, "commit hash: %v\n", commit)
+	fmt.Fprintf(outStream, "build date: %v\n", date)
+	fmt.Fprintf(outStream, "go version: %v\n", goversion)
 }
