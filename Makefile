@@ -13,4 +13,4 @@ test: fmt
 	ENV=test go test -cover -race ./...
 
 build:
-	go build -ldflags="-s -w" -o dist/got ./main.go
+	go build -ldflags="-s -w" -o dist/got cmd/got/main.go

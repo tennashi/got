@@ -35,7 +35,6 @@ func newGot(ioStream *app_io.Stream) *got {
 	subCmds := map[string]runner{
 		"version": newVersionCmd(g),
 		"help":    newHelpCmd(g),
-		"clone":   newCloneCmd(g),
 	}
 	g.subCmds = subCmds
 	return g

@@ -2,7 +2,6 @@ package got
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 )
@@ -29,7 +28,7 @@ type helpCmd struct {
 	fs      *flag.FlagSet
 }
 
-var help = `got - dotfiles and packages manager
+var help = `got - packages manager
 
 Usage:
   got command [arguments]
@@ -37,18 +36,6 @@ Usage:
 Commands:
   version
     print got command version
-
-  clone [repo_name]
-    clone your dotfiles repository
-
-  link
-    create symbolic links
-
-  clean
-    remove all symbolic links
-
-  push
-    push dotfiles update to your dotfiles repository
 
   get [manager] package...
     install the package using the manager
@@ -85,49 +72,4 @@ func (c *helpCmd) run(ctx context.Context) error {
 		return fmt.Errorf("no such command: %s", subCmd)
 	}
 	return nil
-}
-
-type cloneCmd struct {
-	rootCmd *got
-
-	fs *flag.FlagSet
-}
-
-func newCloneCmd(rootCmd *got) *cloneCmd {
-	fs := flag.NewFlagSet("got-clone", flag.ContinueOnError)
-	return &cloneCmd{rootCmd: rootCmd, fs: fs}
-}
-
-func (c *cloneCmd) parse(args []string) error {
-	return c.fs.Parse(args)
-}
-
-func (c *cloneCmd) run(ctx context.Context) error {
-	if c.fs.NArg() < 3 {
-		return errors.New("must specify the dotfiles repository URL")
-	}
-	repoName := c.fs.Arg(2)
-	return clone(c.rootCmd.IOStream, repoName)
-}
-
-type linkCmd struct {
-	rootCmd *got
-
-	fs *flag.FlagSet
-}
-
-func newLinkCmd(rootCmd *got) *linkCmd {
-	fs := flag.NewFlagSet("got-link", flag.ContinueOnError)
-	return &linkCmd{
-		rootCmd: rootCmd,
-		fs:      fs,
-	}
-}
-
-func (c *linkCmd) parse(args []string) error {
-	return c.fs.Parse(args)
-}
-
-func (c *linkCmd) run(ctx context.Context) error {
-	return link()
 }
