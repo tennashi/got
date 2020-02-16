@@ -73,3 +73,41 @@ func (c *helpCmd) run(ctx context.Context) error {
 	}
 	return nil
 }
+
+type getCmd struct {
+	rootCmd *got
+	fs      *flag.FlagSet
+
+	isUpdate bool
+	isList   bool
+	cmdName  string
+}
+
+func newGetCmd(rootCmd *got) *getCmd {
+	fs := flag.NewFlagSet("got-get", flag.ContinueOnError)
+	fs.SetOutput(rootCmd.IOStream.Err)
+
+	cmd := getCmd{
+		rootCmd: rootCmd,
+		fs:      fs,
+	}
+
+	fs.BoolVar(&cmd.isUpdate, "u", false, "update")
+	fs.BoolVar(&cmd.isList, "l", false, "list")
+	fs.StringVar(&cmd.cmdName, "c", "", "command name")
+	return &cmd
+}
+
+func (c *getCmd) parse(args []string) error {
+	return c.fs.Parse(args)
+}
+
+func (c *getCmd) run(ctx context.Context) error {
+	if c.isList {
+		return getAll(c.rootCmd.IOStream, c.isUpdate)
+	}
+
+	pkgName := c.fs.Arg(0)
+	return get(c.rootCmd.IOStream, pkgName, c.cmdName, c.isUpdate)
+
+}

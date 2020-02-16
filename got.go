@@ -35,6 +35,7 @@ func newGot(ioStream *app_io.Stream) *got {
 	subCmds := map[string]runner{
 		"version": newVersionCmd(g),
 		"help":    newHelpCmd(g),
+		"get":     newGetCmd(g),
 	}
 	g.subCmds = subCmds
 	return g
@@ -48,7 +49,7 @@ func (g *got) run(ctx context.Context, args []string) error {
 	if !ok {
 		subCmd = g.subCmds["help"]
 	}
-	if err := subCmd.parse(args); err != nil {
+	if err := subCmd.parse(args[2:]); err != nil {
 		return err
 	}
 	return subCmd.run(ctx)
