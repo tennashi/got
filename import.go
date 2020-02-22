@@ -13,33 +13,42 @@ import (
 )
 
 func appendImport(dataDir, importPath string) error {
-	f, fset, node, err := parseToolsFile(dataDir)
+	tools, err := ensureToolsFile(dataDir)
 	if err != nil {
-		return nil
+		return err
 	}
-	defer f.Close()
+	fset, node, err := parseToolsFile(tools)
+	if err != nil {
+		return err
+	}
 
 	astutil.AddNamedImport(fset, node, "_", importPath)
-	return printer.Fprint(f, fset, node)
+	return writeToolsFile(tools, fset, node)
 }
 
-func deleteImport(dataDir, importPath string) error {
-	f, fset, node, err := parseToolsFile(dataDir)
+func removeImport(dataDir, importPath string) error {
+	tools, err := ensureToolsFile(dataDir)
 	if err != nil {
-		return nil
+		return err
 	}
-	defer f.Close()
+	fset, node, err := parseToolsFile(tools)
+	if err != nil {
+		return err
+	}
 
 	astutil.DeleteNamedImport(fset, node, "_", importPath)
-	return printer.Fprint(f, fset, node)
+	return writeToolsFile(tools, fset, node)
 }
 
 func getImports(dataDir string) ([]string, error) {
-	f, fset, node, err := parseToolsFile(dataDir)
+	tools, err := ensureToolsFile(dataDir)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
-	defer f.Close()
+	fset, node, err := parseToolsFile(tools)
+	if err != nil {
+		return nil, err
+	}
 
 	iSpecs := astutil.Imports(fset, node)
 	imports := make([]string, len(iSpecs[0]))
@@ -53,33 +62,34 @@ func getImports(dataDir string) ([]string, error) {
 	return imports, nil
 }
 
-func parseToolsFile(dataDir string) (*os.File, *token.FileSet, *ast.File, error) {
-	f, toolsPath, err := ensureToolsFile(dataDir)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
+func parseToolsFile(path string) (*token.FileSet, *ast.File, error) {
 	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, toolsPath, nil, parser.Mode(0))
+	node, err := parser.ParseFile(fset, path, nil, parser.Mode(0))
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	return f, fset, node, nil
+	return fset, node, nil
 }
 
-func ensureToolsFile(dataDir string) (*os.File, string, error) {
+func ensureToolsFile(dataDir string) (string, error) {
 	path := filepath.Join(dataDir, "tools.go")
 	if _, err := os.Stat(path); err != nil {
 		f, err := os.Create(path)
 		if err != nil {
-			return nil, "", err
+			return "", err
 		}
-		f.Write([]byte("package main\n"))
-		return f, path, nil
+		defer f.Close()
+		f.WriteString("package main\n")
 	}
-	f, err := os.OpenFile(path, os.O_RDWR, 0644)
+	return path, nil
+}
+
+func writeToolsFile(path string, fset *token.FileSet, node *ast.File) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		return nil, "", err
+		return err
 	}
-	return f, path, nil
+	defer f.Close()
+
+	return printer.Fprint(f, fset, node)
 }

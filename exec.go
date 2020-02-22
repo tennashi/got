@@ -2,16 +2,14 @@ package got
 
 import (
 	"os/exec"
-
-	"github.com/tennashi/got/io"
 )
 
 type commandContext struct {
-	ioStream *io.Stream
+	ioStream *ioStream
 	workDir  string
 }
 
-func newCommandContext(ioStream *io.Stream, dir string) *commandContext {
+func newCommandContext(ioStream *ioStream, dir string) *commandContext {
 	return &commandContext{
 		ioStream: ioStream,
 		workDir:  dir,

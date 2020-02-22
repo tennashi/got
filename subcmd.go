@@ -2,8 +2,8 @@ package got
 
 import (
 	"context"
+	"errors"
 	"flag"
-	"fmt"
 )
 
 type versionCmd struct {
@@ -28,33 +28,8 @@ type helpCmd struct {
 	fs      *flag.FlagSet
 }
 
-var help = `got - packages manager
-
-Usage:
-  got command [arguments]
-
-Commands:
-  version
-    print got command version
-
-  get [manager] package...
-    install the package using the manager
-
-  update [manager] [package]
-    update packages using the manager
-
-  remove [manager] [package]
-    remove the package using the manager
-
-`
-
 func newHelpCmd(rootCmd *got) *helpCmd {
 	fs := flag.NewFlagSet("got-help", flag.ContinueOnError)
-	fs.SetOutput(rootCmd.IOStream.Err)
-	fs.Usage = func() {
-		fmt.Fprint(rootCmd.IOStream.Out, help)
-		fs.PrintDefaults()
-	}
 	return &helpCmd{rootCmd: rootCmd, fs: fs}
 }
 
@@ -63,15 +38,7 @@ func (c *helpCmd) parse(args []string) error {
 }
 
 func (c *helpCmd) run(ctx context.Context) error {
-	c.fs.Usage()
-	if c.fs.NArg() < 2 {
-		return fmt.Errorf("must specify sub-command")
-	}
-	subCmd := c.fs.Arg(1)
-	if subCmd != "help" {
-		return fmt.Errorf("no such command: %s", subCmd)
-	}
-	return nil
+	return c.rootCmd.showHelp()
 }
 
 type getCmd struct {
@@ -81,6 +48,7 @@ type getCmd struct {
 	isUpdate bool
 	isList   bool
 	cmdName  string
+	pkgName  string
 }
 
 func newGetCmd(rootCmd *got) *getCmd {
@@ -99,7 +67,14 @@ func newGetCmd(rootCmd *got) *getCmd {
 }
 
 func (c *getCmd) parse(args []string) error {
-	return c.fs.Parse(args)
+	if err := c.fs.Parse(args); err != nil {
+		return err
+	}
+	if c.fs.NArg() == 0 {
+		return errors.New("must specify package name")
+	}
+	c.pkgName = c.fs.Arg(0)
+	return nil
 }
 
 func (c *getCmd) run(ctx context.Context) error {
@@ -107,7 +82,37 @@ func (c *getCmd) run(ctx context.Context) error {
 		return getAll(c.rootCmd.IOStream, c.isUpdate)
 	}
 
-	pkgName := c.fs.Arg(0)
-	return get(c.rootCmd.IOStream, pkgName, c.cmdName, c.isUpdate)
+	return get(c.rootCmd.IOStream, c.pkgName, c.cmdName, c.isUpdate)
+}
 
+type removeCmd struct {
+	rootCmd *got
+	fs      *flag.FlagSet
+
+	targetName string
+}
+
+func newRemoveCmd(rootCmd *got) *removeCmd {
+	fs := flag.NewFlagSet("got-delete", flag.ContinueOnError)
+	fs.SetOutput(rootCmd.IOStream.Err)
+
+	return &removeCmd{
+		rootCmd: rootCmd,
+		fs:      fs,
+	}
+}
+
+func (c *removeCmd) parse(args []string) error {
+	if err := c.fs.Parse(args); err != nil {
+		return err
+	}
+	if c.fs.NArg() == 0 {
+		return errors.New("must specify package/command name")
+	}
+	c.targetName = c.fs.Arg(0)
+	return nil
+}
+
+func (c *removeCmd) run(ctx context.Context) error {
+	return remove(c.rootCmd.IOStream, c.targetName)
 }

@@ -25,3 +25,19 @@ func EnsureDataDir() (string, error) {
 	}
 	return path, nil
 }
+
+func GoBinDir() (string, error) {
+	path := os.Getenv("GOBIN")
+	if path != "" {
+		return path, nil
+	}
+	path = filepath.Join(os.Getenv("GOPATH"), "bin")
+	if path != "" {
+		return path, nil
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, "go", "bin"), nil
+}
