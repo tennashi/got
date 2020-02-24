@@ -1,5 +1,3 @@
-[![CircleCI](https://circleci.com/gh/tennashi/got/tree/master.svg?style=shield)](https://circleci.com/gh/tennashi/got/tree/master)
-
 # got
 Tool for managing commands written in Go.
 This tool was inspired by [Manage Go tools via Go modules](https://marcofranssen.nl/manage-go-tools-via-go-modules/)
