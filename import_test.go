@@ -214,7 +214,7 @@ func Test_ensureToolsFile(t *testing.T) {
 			t.Fatalf("%v: should create %v", caseName, toolsPath)
 		}
 		data, _ := ioutil.ReadAll(f)
-		if string(data) != "package main\n" {
+		if string(data[:12]) != "package main" {
 			t.Fatalf("%v: want 'package main', but got: %v", caseName, string(data))
 		}
 	})
