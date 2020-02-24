@@ -29,7 +29,7 @@ Commands:
 
 ```
 
-## Install binary written in Go
+## Install command written in Go
 ```
 $ got get github.com/tennashi/got # == go get github.com/tennashi/got
 $ got get tennashi/got # == go get github.com/tennashi/got
@@ -37,12 +37,12 @@ $ got get -c got tennashi/got # == go get github.com/tennashi/got/cmd/got
 $ got get -c hoge tennashi/got # == go get github.com/tennashi/got/cmd/hoge
 ```
 
-## Update all installed binary
+## Update all installed command
 ```
 $ got get -l -u
 ```
 
-## Remove binary
+## Remove command
 ```
 $ got remove github.com/tennashi/got/cmd/got
 or
