@@ -60,6 +60,11 @@ func TestGetCmd_parse(t *testing.T) {
 			want:  "hoge",
 			err:   false,
 		},
+		"list update": {
+			input: []string{"-l", "-u"},
+			want:  "",
+			err:   false,
+		},
 		"list option": {
 			input: []string{"-l", "hoge", "fuga"},
 			want:  "hoge",

@@ -70,7 +70,7 @@ func (c *getCmd) parse(args []string) error {
 	if err := c.fs.Parse(args); err != nil {
 		return err
 	}
-	if c.fs.NArg() == 0 {
+	if c.fs.NArg() == 0 && !c.isList {
 		return errors.New("must specify package name")
 	}
 	c.pkgName = c.fs.Arg(0)
