@@ -1,4 +1,4 @@
-package path
+package got
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"runtime"
 )
 
-func EnsureDataDir() (string, error) {
+func ensureDataDir() (string, error) {
 	var path string
 	if runtime.GOOS == "windows" {
 		path = filepath.Join(os.Getenv("APPDATA"), "got")
@@ -26,14 +26,14 @@ func EnsureDataDir() (string, error) {
 	return path, nil
 }
 
-func GoBinDir() (string, error) {
+func goBinDir() (string, error) {
 	path := os.Getenv("GOBIN")
 	if path != "" {
 		return path, nil
 	}
-	path = filepath.Join(os.Getenv("GOPATH"), "bin")
-	if path != "" {
-		return path, nil
+	goPath := os.Getenv("GOPATH")
+	if goPath != "" {
+		return filepath.Join(goPath, "bin"), nil
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {

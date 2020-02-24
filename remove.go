@@ -4,15 +4,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/tennashi/got/path"
-	app_path "github.com/tennashi/got/path"
 )
 
 func remove(ioStream *ioStream, targetName string) error {
 	cmdName := filepath.Base(targetName)
 
-	dataDir, err := app_path.EnsureDataDir()
+	dataDir, err := ensureDataDir()
 	if err != nil {
 		return err
 	}
@@ -38,7 +35,7 @@ func remove(ioStream *ioStream, targetName string) error {
 }
 
 func removeCommand(cmdName string) error {
-	goBinDir, err := path.GoBinDir()
+	goBinDir, err := goBinDir()
 	if err != nil {
 		return err
 	}

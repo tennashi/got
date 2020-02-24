@@ -1,7 +1,9 @@
 package got
 
 import (
+	"errors"
 	"io/ioutil"
+	"reflect"
 	"testing"
 )
 
@@ -57,12 +59,37 @@ func TestGot_parse_F(t *testing.T) {
 			if err == nil {
 				t.Fatalf("should be error for %v but not", caseName)
 			}
-			checkShowHelp(t)
+			testShowHelp(t)
 		})
 	}
 }
 
-func checkShowHelp(t *testing.T) {
+func TestGot_showHelp(t *testing.T) {
+	cases := map[string]struct {
+		input error
+	}{
+		"no error": {
+			input: nil,
+		},
+		"error occured": {
+			input: errors.New("error"),
+		},
+	}
+
+	r := newGot(testIOStream)
+	for caseName, tt := range cases {
+		t.Run(caseName, func(t *testing.T) {
+			r.err = tt.input
+			got := r.showHelp()
+			if !reflect.DeepEqual(got, tt.input) {
+				t.Fatalf("%v: want %v, but got: %v", caseName, tt.input, got)
+			}
+			testShowHelp(t)
+		})
+	}
+}
+
+func testShowHelp(t *testing.T) {
 	t.Helper()
 	out, _ := ioutil.ReadAll(&testOut)
 	if string(out) != help {

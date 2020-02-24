@@ -51,12 +51,23 @@ func getImports(dataDir string) ([]string, error) {
 	}
 
 	iSpecs := astutil.Imports(fset, node)
-	imports := make([]string, len(iSpecs[0]))
-	for i, iSpec := range iSpecs[0] {
-		var err error
-		imports[i], err = strconv.Unquote(iSpec.Path.Value)
-		if err != nil {
-			return nil, err
+	iLen := 0
+	for i := range iSpecs {
+		iLen += len(iSpecs[i])
+	}
+
+	imports := make([]string, iLen)
+	for i, iParts := range iSpecs {
+		for j, iPart := range iParts {
+			var err error
+			if i == 0 {
+				imports[j], err = strconv.Unquote(iPart.Path.Value)
+			} else {
+				imports[len(iSpecs[i-1])+j], err = strconv.Unquote(iPart.Path.Value)
+			}
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return imports, nil
