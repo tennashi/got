@@ -170,8 +170,7 @@ func Test_removeImport(t *testing.T) {
 func Test_ensureToolsFile(t *testing.T) {
 	caseName := "empty directory"
 	t.Run(caseName, func(t *testing.T) {
-		dataDir := filepath.Join(testDir, "empty_dir")
-		copy.Copy(dataDir, tmpDir)
+		os.Mkdir(tmpDir, 0755)
 		defer os.RemoveAll(tmpDir)
 
 		got, err := ensureToolsFile(tmpDir)
