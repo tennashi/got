@@ -1,80 +1,55 @@
 package got
 
-import "testing"
+import (
+	"testing"
 
-func Test_fullPackageName(t *testing.T) {
-	type input struct {
-		pkgName string
-		cmdName string
-	}
+	"github.com/google/go-cmp/cmp"
+)
 
-	cases := map[string]struct {
-		input input
+func TestInstallPackage(t *testing.T) {
+	cases := []struct {
+		input string
 		want  string
+		err   bool
 	}{
-		"set full package name and version": {
-			input: input{
-				pkgName: "github.com/tennashi/got@0.0.1",
-				cmdName: "",
-			},
-			want: "github.com/tennashi/got@0.0.1",
+		{
+			input: "github.com/tennashi/got@0.0.1",
+			want:  "github.com/tennashi/got@0.0.1",
+			err:   false,
 		},
-		"set full package name": {
-			input: input{
-				pkgName: "github.com/tennashi/got",
-				cmdName: "",
-			},
-			want: "github.com/tennashi/got",
+		{
+			input: "tennashi/got@0.0.1",
+			want:  "github.com/tennashi/got@0.0.1",
+			err:   false,
 		},
-		"set short package name and version": {
-			input: input{
-				pkgName: "tennashi/got@0.0.1",
-				cmdName: "",
-			},
-			want: "github.com/tennashi/got@0.0.1",
+		{
+			input: "got@0.0.1",
+			want:  "github.com/got@0.0.1",
+			err:   false,
 		},
-		"set short package name": {
-			input: input{
-				pkgName: "tennashi/got",
-				cmdName: "",
-			},
-			want: "github.com/tennashi/got",
+		{
+			input: "github.com/tennashi/got",
+			want:  "github.com/tennashi/got@latest",
+			err:   false,
 		},
-		"set command name with full package name and version": {
-			input: input{
-				pkgName: "github.com/tennashi/got@0.0.1",
-				cmdName: "command",
-			},
-			want: "github.com/tennashi/got/cmd/command@0.0.1",
-		},
-		"set command name with full package name": {
-			input: input{
-				pkgName: "github.com/tennashi/got",
-				cmdName: "command",
-			},
-			want: "github.com/tennashi/got/cmd/command",
-		},
-		"set command name with short package name and version": {
-			input: input{
-				pkgName: "tennashi/got@0.0.1",
-				cmdName: "command",
-			},
-			want: "github.com/tennashi/got/cmd/command@0.0.1",
-		},
-		"set command name with short package name": {
-			input: input{
-				pkgName: "tennashi/got",
-				cmdName: "command",
-			},
-			want: "github.com/tennashi/got/cmd/command",
+		{
+			input: "-/tennashi/got",
+			want:  "",
+			err:   true,
 		},
 	}
 
-	for caseName, tt := range cases {
-		t.Run(caseName, func(t *testing.T) {
-			got := fullPackageName(tt.input.pkgName, tt.input.cmdName)
-			if got != tt.want {
-				t.Fatalf("%v: want %v, but got: %v", caseName, tt.want, got)
+	for _, tt := range cases {
+		t.Run("", func(t *testing.T) {
+			got, err := NewInstallPackage(tt.input, false)
+			if !tt.err && err != nil {
+				t.Fatalf("should not be error but: %v", err)
+			}
+			if tt.err && err == nil {
+				t.Fatalf("should be error but not")
+			}
+			if diff := cmp.Diff(tt.want, got.String()); diff != "" {
+				t.Fatalf("mismatch (-want, +got):\n%s", diff)
 			}
 		})
 	}

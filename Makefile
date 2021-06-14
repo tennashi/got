@@ -10,7 +10,7 @@ fmt: lint
 	goimports -w ./
 
 test:
-	ENV=test go test -cover -race ./...
+	go test -cover -race ./... -v
 
 build:
 	go build -ldflags="-s -w" -o dist/got cmd/got/main.go

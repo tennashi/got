@@ -2,38 +2,114 @@ package got
 
 import (
 	"errors"
-	"path"
-	"path/filepath"
+	"fmt"
 	"strings"
+
+	"golang.org/x/mod/module"
 )
 
-func fullPackageName(pkgName, cmdName string) string {
-	parts := strings.Split(pkgName, "@")
-	repoParts := strings.Split(parts[0], "/")
-
-	var packParts []string
-	if !strings.ContainsRune(repoParts[0], '.') {
-		packParts = append(packParts, "github.com")
-	}
-	packParts = append(packParts, repoParts...)
-	if cmdName != "" {
-		packParts = append(packParts, "cmd", cmdName)
-	}
-	if len(parts) == 2 {
-		packParts[len(packParts)-1] += "@" + parts[1]
-	}
-	return path.Join(packParts...)
+type InstalledPackage struct {
+	Path        PackagePath
+	Version     string
+	Executables []*Executable
 }
 
-func getPackageName(dataDir, cmdName string) (string, error) {
-	imports, err := getImports(dataDir)
-	if err != nil {
-		return "", err
+type Executable struct {
+	Name    string
+	Path    string
+	Disable bool
+}
+
+type ParsePackageError struct {
+	Target string
+	Err    error
+}
+
+func (e *ParsePackageError) Error() string {
+	if e == nil {
+		return "<nil>"
 	}
-	for _, impPath := range imports {
-		if filepath.Base(impPath) == cmdName {
-			return impPath, nil
+
+	if e.Err == nil {
+		return fmt.Sprintf("failed to parse package: %s", e.Target)
+	}
+
+	return fmt.Sprintf("failed to parse package: %s: %s", e.Target, e.Err.Error())
+}
+
+func (e *ParsePackageError) Unwrap() error {
+	if e == nil {
+		return nil
+	}
+
+	return e.Err
+}
+
+type InstallPackage struct {
+	Path    PackagePath
+	Version string
+	IsAll   bool
+}
+
+func NewInstallPackage(rawPkgName string, isAll bool) (*InstallPackage, error) {
+	pair := strings.SplitN(rawPkgName, "@", 2)
+
+	if len(pair) == 0 {
+		return nil, &ParsePackageError{
+			Target: rawPkgName,
+			Err:    errors.New("split into 0 pieces"),
 		}
 	}
-	return "", errors.New("package not found")
+
+	pkgPath, err := NewPackagePath(pair[0])
+	if err != nil {
+		return nil, &ParsePackageError{
+			Target: rawPkgName,
+			Err:    err,
+		}
+	}
+
+	if len(pair) == 1 {
+		return &InstallPackage{
+			Path:    pkgPath,
+			Version: "latest",
+			IsAll:   isAll,
+		}, nil
+	}
+
+	return &InstallPackage{
+		Path:    pkgPath,
+		Version: pair[1],
+		IsAll:   isAll,
+	}, nil
+}
+
+func (p *InstallPackage) String() string {
+	if p == nil {
+		return ""
+	}
+
+	if p.IsAll {
+		return string(p.Path) + "/...@" + p.Version
+	}
+
+	return string(p.Path) + "@" + p.Version
+}
+
+type PackagePath string
+
+func NewPackagePath(rawPkgPath string) (PackagePath, error) {
+	err := module.CheckPath(rawPkgPath)
+	if err != nil {
+		if !strings.Contains(err.Error(), "missing dot in first path element") {
+			return "", &ParsePackageError{
+				Target: rawPkgPath,
+				Err:    err,
+			}
+		}
+
+		return PackagePath("github.com/" + rawPkgPath), nil
+	}
+
+	return PackagePath(rawPkgPath), nil
 }
