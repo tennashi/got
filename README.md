@@ -32,8 +32,8 @@ GLOBAL OPTIONS:
 
 ### Install the command written in Go
 ```
-$ got install github.com/tennashi/got # == go get github.com/tennashi/got/...@latest
-$ got install tennashi/got # == go get github.com/tennashi/got/...@latest
+$ got install github.com/tennashi/got # == go install github.com/tennashi/got/...@latest
+$ got install tennashi/got # == go install github.com/tennashi/got/...@latest
 ```
 
 ### Upgrade installed commands
