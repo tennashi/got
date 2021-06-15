@@ -1,12 +1,16 @@
 # got
 Tool for managing commands written in Go.
 
-# Install
+## Require
+* `go >= 1.16`
+  * using `go install` command to install a specific version
+
+## Install
 ```bash
 $ go get http://github.com/tennashi/got/cmd/got
 ```
 
-# Usage
+## Usage
 ```
 NAME:
    got - package manager for commands written in Go
@@ -26,18 +30,18 @@ GLOBAL OPTIONS:
    --help, -h                show help (default: false)
 ```
 
-## Install the command written in Go
+### Install the command written in Go
 ```
 $ got install github.com/tennashi/got # == go get github.com/tennashi/got/...@latest
 $ got install tennashi/got # == go get github.com/tennashi/got/...@latest
 ```
 
-## Upgrade installed commands
+### Upgrade installed commands
 ```
 $ got upgrade
 ```
 
-## List installed commands
+### List installed commands
 ```
 $ got list
 ```
