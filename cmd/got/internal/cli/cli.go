@@ -27,6 +27,7 @@ func Run() int {
 		},
 		Commands: []*cli.Command{
 			NewInstallCommand(),
+			NewListCommand(),
 		},
 	}
 

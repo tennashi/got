@@ -1,9 +1,11 @@
 package got
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/schollz/jsonstore"
 )
@@ -63,6 +65,38 @@ func (r *InstalledPackageRepository) Get(pkgPath PackagePath) (*InstalledPackage
 	r.debugL.Printf("end (*InstalledPackageRepository).Get(%s)\n", pkgPath)
 
 	return installedPkg, nil
+}
+
+type sortablePackages []InstalledPackage
+
+func (s sortablePackages) Len() int           { return len(s) }
+func (s sortablePackages) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s sortablePackages) Less(i, j int) bool { return s[i].Path < s[j].Path }
+
+func (r *InstalledPackageRepository) List() ([]InstalledPackage, error) {
+	r.debugL.Printf("start (*InstalledPackageRepository).List()\n")
+
+	allEntries, err := r.store.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	pkgs := make([]InstalledPackage, 0, len(allEntries))
+	for _, e := range allEntries {
+		pkg := InstalledPackage{}
+		err := json.Unmarshal(e, &pkg)
+		if err != nil {
+			return nil, err
+		}
+
+		pkgs = append(pkgs, pkg)
+	}
+
+	sort.Sort(sortablePackages(pkgs))
+
+	r.debugL.Printf("end (*InstalledPackageRepository).List()\n")
+
+	return pkgs, nil
 }
 
 func (r *InstalledPackageRepository) Save(pkg *InstalledPackage) error {

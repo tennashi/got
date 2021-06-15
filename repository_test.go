@@ -23,6 +23,17 @@ var testInstalledPackages = []got.InstalledPackage{
 			},
 		},
 	},
+	{
+		Path:    "github.com/tennashi/got-2",
+		Version: "latest",
+		Executables: []*got.Executable{
+			{
+				Name:    "got-2",
+				Path:    "/path/to/got-2",
+				Disable: false,
+			},
+		},
+	},
 }
 
 func initTestJSONStore(t *testing.T, pkgs []got.InstalledPackage) string {
@@ -211,6 +222,30 @@ func TestInstalledPackageRepository_Save(t *testing.T) {
 	}
 }
 
+func TestInstalledPackageRepository_List(t *testing.T) {
+	jsonPath := initTestJSONStore(t, testInstalledPackages)
+	ioStream := newTestIOStream()
+	cfg := &got.InstalledPackageRepositoryConfig{
+		FilePath: jsonPath,
+		IsDebug:  true,
+	}
+	r, err := got.NewInstalledPackageRepository(ioStream, cfg)
+	if err != nil {
+		t.Fatalf("should not be error but: %v", err)
+	}
+
+	got, err := r.List()
+	if err != nil {
+		t.Fatalf("should not be error but: %v", err)
+	}
+
+	if diff := cmp.Diff(testInstalledPackages, got); diff != "" {
+		t.Fatalf("mismatch (-want, +got): %s\n", diff)
+	}
+
+	t.Logf("\n%s", ioStream.Err.(*bytes.Buffer).String())
+}
+
 func TestInstalledPackageRepository(t *testing.T) {
 	jsonPath := initTestJSONStore(t, nil)
 
@@ -237,6 +272,17 @@ func TestInstalledPackageRepository(t *testing.T) {
 			t.Fatalf("the return value should be empty but: %v", g)
 		}
 
+	})
+
+	t.Run("r.List() returns an empty list", func(t *testing.T) {
+		g, err := r.List()
+		if err != nil {
+			t.Fatalf("should not be error but: %v", err)
+		}
+
+		if diff := cmp.Diff([]got.InstalledPackage{}, g); diff != "" {
+			t.Fatalf("mismatch (-want, +got): %s\n", diff)
+		}
 	})
 
 	testInstalledPackage := &got.InstalledPackage{
@@ -269,19 +315,44 @@ func TestInstalledPackageRepository(t *testing.T) {
 		}
 	})
 
-	t.Run("r.Get() will return the latest updated one", func(t *testing.T) {
-		testInstalledPackage.Version = "updated"
-		err := r.Save(testInstalledPackage)
+	t.Run("r.List() returns saved packages", func(t *testing.T) {
+		g, err := r.List()
 		if err != nil {
 			t.Fatalf("should not be error but: %v", err)
 		}
 
+		if diff := cmp.Diff([]got.InstalledPackage{*testInstalledPackage}, g); diff != "" {
+			t.Fatalf("mismatch (-want, +got): %s\n", diff)
+		}
+	})
+
+	testInstalledPackage.Version = "updated"
+
+	t.Run("r.Save() will also succeed if path already exists", func(t *testing.T) {
+		err := r.Save(testInstalledPackage)
+		if err != nil {
+			t.Fatalf("should not be error but: %v", err)
+		}
+	})
+
+	t.Run("r.Get() will return the latest updated one", func(t *testing.T) {
 		g, err := r.Get(testInstalledPackage.Path)
 		if err != nil {
 			t.Fatalf("should not be error but: %v", err)
 		}
 
 		if diff := cmp.Diff(testInstalledPackage, g); diff != "" {
+			t.Fatalf("mismatch (-want, +got): %s\n", diff)
+		}
+	})
+
+	t.Run("r.List() returns saved packages", func(t *testing.T) {
+		g, err := r.List()
+		if err != nil {
+			t.Fatalf("should not be error but: %v", err)
+		}
+
+		if diff := cmp.Diff([]got.InstalledPackage{*testInstalledPackage}, g); diff != "" {
 			t.Fatalf("mismatch (-want, +got): %s\n", diff)
 		}
 	})

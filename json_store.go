@@ -1,6 +1,7 @@
 package got
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/schollz/jsonstore"
@@ -47,6 +48,23 @@ func (s *JSONStore) Get(key string, v interface{}) error {
 	s.debugL.Printf("end (*JSONStore).Get(%s, %v)\n", key, v)
 
 	return store.Get(key, v)
+}
+
+func (s *JSONStore) GetAll() (map[string]json.RawMessage, error) {
+	s.debugL.Printf("start (*JSONStore).GetAll()\n")
+
+	store, err := jsonstore.Open(s.filePath)
+	if err != nil {
+		s.debugL.Printf("error occurred in jsonstore.Open(): %v\n", err)
+
+		return nil, err
+	}
+
+	allEntries := store.GetAll(nil)
+
+	s.debugL.Printf("end (*JSONStore).GetAll()\n")
+
+	return allEntries, nil
 }
 
 func (s *JSONStore) Save(key string, v interface{}) error {
