@@ -1,6 +1,5 @@
 # got
 Tool for managing commands written in Go.
-This tool was inspired by [Manage Go tools via Go modules](https://marcofranssen.nl/manage-go-tools-via-go-modules/)
 
 # Install
 ```bash
@@ -9,43 +8,36 @@ $ go get http://github.com/tennashi/got/cmd/got
 
 # Usage
 ```
-got - go packages manager
+NAME:
+   got - package manager for commands written in Go
 
-Usage:
-  got command [arguments]
+USAGE:
+   got [global options] command [command options] [arguments...]
 
-Commands:
-  help
-    print this help
+COMMANDS:
+   install  install the specified package
+   upgrade  upgrade installed packages
+   list     list installed packages
+   help, h  Shows a list of commands or help for one command
 
-  version
-    print got command version
-
-  get [-lu] [-c command] package
-    install the package
-
-  remove [package|command]
-    remove the package
-
+GLOBAL OPTIONS:
+   --config value, -c value  config file [$GOT_CONFIG_FILE]
+   --debug                   debug mode (default: false) [$GOT_DEBUG]
+   --help, -h                show help (default: false)
 ```
 
-## Install command written in Go
+## Install the command written in Go
 ```
-$ got get github.com/tennashi/got # == go get github.com/tennashi/got
-$ got get tennashi/got # == go get github.com/tennashi/got
-$ got get -c got tennashi/got # == go get github.com/tennashi/got/cmd/got
-$ got get -c hoge tennashi/got # == go get github.com/tennashi/got/cmd/hoge
+$ got install github.com/tennashi/got # == go get github.com/tennashi/got/...@latest
+$ got install tennashi/got # == go get github.com/tennashi/got/...@latest
 ```
 
-## Update all installed command
+## Upgrade installed commands
 ```
-$ got get -l -u
+$ got upgrade
 ```
 
-## Remove command
+## List installed commands
 ```
-$ got remove github.com/tennashi/got/cmd/got
-or
-$ got remove got
+$ got list
 ```
-These commands remove `$GOBIN/got` (If unset `$GOBIN`, it defaults `$GOPATH/bin`.) and remove the import `github.com/tennashi/got/cmd/got` from `~/.local/share/got/tools.go`.
