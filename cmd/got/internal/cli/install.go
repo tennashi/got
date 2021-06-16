@@ -62,7 +62,9 @@ func NewInstallCommand() *cli.Command {
 			}
 
 			if c.NArg() != 1 {
-				return errors.New("some error")
+				return &got.InvalidParamError{
+					Message: "package name is required",
+				}
 			}
 
 			return nil

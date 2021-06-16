@@ -62,7 +62,9 @@ func NewUpgradeCommand() *cli.Command {
 			}
 
 			if c.NArg() != 0 {
-				return errors.New("some error")
+				return &got.InvalidParamError{
+					Message: "no params required",
+				}
 			}
 
 			return nil
