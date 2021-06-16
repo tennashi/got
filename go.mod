@@ -1,6 +1,6 @@
 module github.com/tennashi/got
 
-go 1.13
+go 1.16
 
 require (
 	github.com/adrg/xdg v0.3.3
