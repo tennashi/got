@@ -66,7 +66,11 @@ func NewConfigFile(path string) (*ConfigFile, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return NewDefaultConfigFile()
+			defaultConfig, derr := NewDefaultConfigFile()
+			if derr != nil {
+				return nil, derr
+			}
+			return defaultConfig, err
 		}
 		return nil, err
 	}

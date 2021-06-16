@@ -1,7 +1,8 @@
 package cli
 
 import (
-	"errors"
+	"fmt"
+	"os"
 
 	"github.com/tennashi/got"
 	"github.com/urfave/cli/v2"
@@ -22,7 +23,11 @@ func NewListCommand() *cli.Command {
 		Before: func(c *cli.Context) error {
 			cf, err := NewConfigFile(c.Path("config"))
 			if err != nil {
-				return err
+				if !os.IsNotExist(err) {
+					return err
+				}
+
+				fmt.Fprintln(c.App.ErrWriter, "Load the default config")
 			}
 
 			if !c.IsSet("datadir") {
