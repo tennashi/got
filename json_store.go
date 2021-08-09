@@ -31,7 +31,7 @@ func NewJSONStore(ioStream *IOStream, cfg *JSONStoreConfig) (*JSONStore, error) 
 
 	if _, err := jsonstore.Open(cfg.FilePath); err != nil {
 		if err := jsonstore.Save(&jsonstore.JSONStore{}, cfg.FilePath); err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
 
