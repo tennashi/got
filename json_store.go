@@ -3,6 +3,8 @@ package got
 import (
 	"encoding/json"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/schollz/jsonstore"
 )
@@ -21,6 +23,10 @@ type JSONStore struct {
 func NewJSONStore(ioStream *IOStream, cfg *JSONStoreConfig) (*JSONStore, error) {
 	if cfg.FilePath == "" {
 		return nil, &InvalidParamError{Message: "file path must not be empty"}
+	}
+
+	if err := os.MkdirAll(filepath.Dir(cfg.FilePath), 0755); err != nil {
+		return nil, err
 	}
 
 	if _, err := jsonstore.Open(cfg.FilePath); err != nil {
