@@ -29,12 +29,14 @@ func NewTablePrinter(ioStream *IOStream, cfg *TablePrinterConfig) *TablePrinter 
 func (p *TablePrinter) PrintInstalledPackages(pkgs []InstalledPackage) error {
 	defer p.writer.Flush()
 
-	fmt.Fprintln(p.writer, "NAME\tVERSION\tEXECUTABLES\t")
+	fmt.Fprintln(p.writer, "NAME\tVERSION\tINSTALLED EXECUTABLES\t")
 
 	for _, pkg := range pkgs {
 		executableNames := make([]string, 0, len(pkg.Executables))
 		for _, exec := range pkg.Executables {
-			executableNames = append(executableNames, exec.Name)
+			if !exec.Disable {
+				executableNames = append(executableNames, exec.Name)
+			}
 		}
 
 		fmt.Fprintln(p.writer, strings.Join(

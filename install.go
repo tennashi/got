@@ -95,6 +95,10 @@ func (c *InstallCommand) Run(pkgName string) error {
 	c.prompter.SelectExecutableToDisable(installedPkg)
 
 	for _, exec := range installedPkg.Executables {
+		if exec.Disable {
+			break
+		}
+
 		fmt.Fprintf(c.out, "Installed the executable: %s\n", exec.Path)
 		fmt.Fprintf(c.out, "Linking the executable: %s\n", exec.Name)
 
