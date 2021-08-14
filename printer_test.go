@@ -57,7 +57,7 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 				},
 			},
 			want: []string{
-				"NAME                       VERSION  EXECUTABLES  ",
+				"NAME                       VERSION  INSTALLED EXECUTABLES  ",
 				"github.com/tennashi/got    latest   got",
 				"github.com/tennashi/got-2  latest   got-2-1,got-2-2",
 				"github.com/tennashi/got-3           got-3",
@@ -68,7 +68,7 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 		{
 			input: []got.InstalledPackage{},
 			want: []string{
-				"NAME  VERSION  EXECUTABLES  ",
+				"NAME  VERSION  INSTALLED EXECUTABLES  ",
 				"",
 			},
 			err: false,
@@ -76,7 +76,7 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 		{
 			input: nil,
 			want: []string{
-				"NAME  VERSION  EXECUTABLES  ",
+				"NAME  VERSION  INSTALLED EXECUTABLES  ",
 				"",
 			},
 			err: false,
