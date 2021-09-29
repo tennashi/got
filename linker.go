@@ -67,7 +67,7 @@ func (l *ExecutableLinker) ForceLink(executable *Executable) error {
 
 	destPath := filepath.Join(l.binDir, executable.Name)
 
-	if err := os.Remove(destPath); err != nil {
+	if err := os.Remove(destPath); err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
