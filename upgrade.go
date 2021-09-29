@@ -76,7 +76,21 @@ func (c *UpgradeCommand) Run() error {
 			return err
 		}
 
+		currentPkg, err := c.repository.Get(upgradedPkg.Path)
+
 		for _, exec := range upgradedPkg.Executables {
+			isNew := true
+			for _, currentExec := range currentPkg.Executables {
+				if exec.Path == currentExec.Path {
+					exec.Disable = currentExec.Disable
+					isNew = false
+				}
+			}
+
+			if isNew {
+				// TODO: select enable or disable
+			}
+
 			fmt.Fprintf(c.out, "Upgraded the executable: %s\n", exec.Path)
 			fmt.Fprintf(c.out, "Linking the executable: %s\n", exec.Name)
 
