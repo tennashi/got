@@ -91,6 +91,10 @@ func (c *UpgradeCommand) Run() error {
 				// TODO: select enable or disable
 			}
 
+			if exec.Disable {
+				continue
+			}
+
 			fmt.Fprintf(c.out, "Upgraded the executable: %s\n", exec.Path)
 			fmt.Fprintf(c.out, "Linking the executable: %s\n", exec.Name)
 
