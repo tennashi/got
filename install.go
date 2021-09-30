@@ -106,7 +106,7 @@ func (c *InstallCommand) Run(pkgName string) error {
 
 	for _, exec := range installedPkg.Executables {
 		if exec.Disable {
-			break
+			continue
 		}
 
 		fmt.Fprintf(c.out, "Installed the executable: %s\n", exec.Path)
