@@ -22,6 +22,7 @@ type UpgradeCommand struct {
 	installer  *PackageInstaller
 	repository *InstalledPackageRepository
 	linker     *ExecutableLinker
+	prompter   *Prompter
 }
 
 func NewUpgradeCommand(ioStream *IOStream, cfg *UpgradeCommandConfig) (*UpgradeCommand, error) {
@@ -52,12 +53,17 @@ func NewUpgradeCommand(ioStream *IOStream, cfg *UpgradeCommandConfig) (*UpgradeC
 		return nil, err
 	}
 
+	prompterCfg := &PrompterConfig{
+		IsDebug: cfg.IsDebug,
+	}
+
 	return &UpgradeCommand{
 		installAllCommand: cfg.InstallAllCommand,
 		out:               ioStream.Out,
 		installer:         installer,
 		linker:            linker,
 		repository:        repo,
+		prompter:          NewPrompter(ioStream, prompterCfg),
 	}, nil
 }
 
@@ -78,6 +84,7 @@ func (c *UpgradeCommand) Run() error {
 
 		currentPkg, err := c.repository.Get(upgradedPkg.Path)
 
+		executables := make([]*Executable, 0, len(upgradedPkg.Executables))
 		for _, exec := range upgradedPkg.Executables {
 			isNew := true
 			for _, currentExec := range currentPkg.Executables {
@@ -88,14 +95,20 @@ func (c *UpgradeCommand) Run() error {
 			}
 
 			if isNew {
-				// TODO: select enable or disable
+				fmt.Fprintln(c.out, "Found a new executable")
+				exec = c.prompter.SelectExecutableToDisable(exec)
 			}
 
+			executables = append(executables, exec)
+		}
+
+		upgradedPkg.Executables = executables
+
+		for _, exec := range upgradedPkg.Executables {
 			if exec.Disable {
 				continue
 			}
 
-			fmt.Fprintf(c.out, "Upgraded the executable: %s\n", exec.Path)
 			fmt.Fprintf(c.out, "Linking the executable: %s\n", exec.Name)
 
 			if err := c.linker.ForceLink(exec); err != nil {
