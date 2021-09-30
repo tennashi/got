@@ -10,70 +10,40 @@ import (
 
 func TestPrompter_SelectExecutableToDisable(t *testing.T) {
 	cases := []struct {
-		input *got.InstalledPackage
+		input *got.Executable
 		stdin string
-		want  *got.InstalledPackage
+		want  *got.Executable
 	}{
 		{
-			input: &got.InstalledPackage{
-				Path:    "github.com/tennashi/got",
-				Version: "latest",
-				Executables: []*got.Executable{
-					{
-						Name:    "got",
-						Path:    "/path/to/got",
-						Disable: false,
-					},
-					{
-						Name:    "got-2",
-						Path:    "/path/to/got-2",
-						Disable: false,
-					},
-				},
+			input: &got.Executable{
+				Name:    "got",
+				Path:    "/path/to/got",
+				Disable: false,
 			},
-			stdin: "y\nn",
-			want: &got.InstalledPackage{
-				Path:    "github.com/tennashi/got",
-				Version: "latest",
-				Executables: []*got.Executable{
-					{
-						Name:    "got",
-						Path:    "/path/to/got",
-						Disable: false,
-					},
-					{
-						Name:    "got-2",
-						Path:    "/path/to/got-2",
-						Disable: true,
-					},
-				},
+			stdin: "y",
+			want: &got.Executable{
+				Name:    "got",
+				Path:    "/path/to/got",
+				Disable: false,
 			},
 		},
 		{
-			input: &got.InstalledPackage{
-				Path:        "github.com/tennashi/got",
-				Version:     "latest",
-				Executables: []*got.Executable{},
+			input: &got.Executable{
+				Name:    "got",
+				Path:    "/path/to/got",
+				Disable: false,
 			},
-			stdin: "",
-			want: &got.InstalledPackage{
-				Path:        "github.com/tennashi/got",
-				Version:     "latest",
-				Executables: []*got.Executable{},
+			stdin: "n",
+			want: &got.Executable{
+				Name:    "got",
+				Path:    "/path/to/got",
+				Disable: true,
 			},
 		},
 		{
-			input: &got.InstalledPackage{
-				Path:        "github.com/tennashi/got",
-				Version:     "latest",
-				Executables: nil,
-			},
+			input: &got.Executable{},
 			stdin: "",
-			want: &got.InstalledPackage{
-				Path:        "github.com/tennashi/got",
-				Version:     "latest",
-				Executables: nil,
-			},
+			want:  &got.Executable{},
 		},
 		{
 			input: nil,

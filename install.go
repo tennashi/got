@@ -92,7 +92,17 @@ func (c *InstallCommand) Run(pkgName string) error {
 		return err
 	}
 
-	c.prompter.SelectExecutableToDisable(installedPkg)
+	if len(installedPkg.Executables) > 1 {
+		fmt.Fprintf(c.out, "Multiple executables are found: %s.\n", installedPkg.Path)
+
+		executables := make([]*Executable, 0, len(installedPkg.Executables))
+		for _, exec := range installedPkg.Executables {
+			exec = c.prompter.SelectExecutableToDisable(exec)
+			executables = append(executables, exec)
+		}
+
+		installedPkg.Executables = executables
+	}
 
 	for _, exec := range installedPkg.Executables {
 		if exec.Disable {

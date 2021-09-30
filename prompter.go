@@ -26,31 +26,19 @@ func NewPrompter(ioStream *IOStream, cfg *PrompterConfig) *Prompter {
 	}
 }
 
-func (p *Prompter) SelectExecutableToDisable(pkg *InstalledPackage) {
-	p.debugL.Printf("start (*Prompter).SelectExecutableToDisable(%v)\n", pkg)
+func (p *Prompter) SelectExecutableToDisable(exec *Executable) *Executable {
+	p.debugL.Printf("start (*Prompter).SelectExecutableToDisable(%v)\n", exec)
 
-	if pkg == nil {
-		p.debugL.Printf("end (*Prompter).SelectExecutableToDisable(%v)\n", pkg)
-		return
+	if exec == nil {
+		p.debugL.Printf("end (*Prompter).SelectExecutableToDisable(%v)\n", exec)
+		return nil
 	}
 
-	executables := pkg.Executables
-
-	if len(executables) <= 1 {
-		p.debugL.Printf("end (*Prompter).SelectExecutableToDisable(%v)\n", pkg)
-		return
-	}
-
-	fmt.Fprintf(p.out, "Multiple executables are found: %s.\n", pkg.Path)
 	fmt.Fprintln(p.out, "Please select an executable to install.")
+	exec.Disable = !p.AskYN(exec.Name)
 
-	for _, executable := range executables {
-		executable.Disable = !p.AskYN(executable.Name)
-	}
-
-	pkg.Executables = executables
-
-	p.debugL.Printf("end (*Prompter).SelectExecutableToDisable(%v)\n", pkg)
+	p.debugL.Printf("end (*Prompter).SelectExecutableToDisable(%v)\n", exec)
+	return exec
 }
 
 func (p *Prompter) ChooseToForceOverwrite(destPath string) bool {
