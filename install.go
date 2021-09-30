@@ -109,7 +109,6 @@ func (c *InstallCommand) Run(pkgName string) error {
 			continue
 		}
 
-		fmt.Fprintf(c.out, "Installed the executable: %s\n", exec.Path)
 		fmt.Fprintf(c.out, "Linking the executable: %s\n", exec.Name)
 
 		if err := c.linker.Link(exec); err != nil {
