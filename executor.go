@@ -1,6 +1,7 @@
 package got
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -99,6 +100,43 @@ func (e *Executor) Exec(cmdName string, args []string) error {
 	e.debugL.Printf("end (*Executor).Exec(%v, %v)\n", cmdName, args)
 
 	return nil
+}
+
+func (e *Executor) ExecBackground(cmdName string, args []string) (string, error) {
+	e.debugL.Printf("start (*Executor).ExecBackground(%v, %v)\n", cmdName, args)
+
+	cmd := exec.Command(cmdName, args...)
+	e.debugL.Printf("actual command: %s\n", cmd)
+	cmd.Stdin = e.ioStream.In
+
+	env := os.Environ()
+	for k, vs := range e.env {
+		env = append(env, k+"="+strings.Join(vs, ","))
+
+		e.debugL.Printf("env added: %s=%s\n", k, strings.Join(vs, ","))
+	}
+
+	cmd.Env = env
+
+	stdout, err := cmd.Output()
+	if err != nil {
+		execErr := &exec.ExitError{}
+		if errors.As(err, &execErr) {
+			e.debugL.Printf("error occurred in cmd.Output(): %s\n", err.Error())
+
+			return "", &CommandExecutionError{
+				Command: cmdName + " " + strings.Join(args, " "),
+				Message: string(execErr.Stderr),
+				Err:     err,
+			}
+		}
+
+		return "", err
+	}
+
+	e.debugL.Printf("end (*Executor).Exec(%v, %v)\n", cmdName, args)
+
+	return string(stdout), nil
 }
 
 func (e *Executor) SetEnv(k, v string) {
