@@ -75,7 +75,10 @@ func (c *UpgradeCommand) Run() error {
 
 	upgradeTargets := InstalledPackages(allPackages).UpgradeTargets(c.installAllCommand)
 
-	fmt.Fprintf(c.out, "This packages will be upgraded: %s\n", InstallPackages(upgradeTargets).Pathes())
+	fmt.Fprintln(c.out, "This packages will be upgraded:")
+	for _, path := range InstallPackages(upgradeTargets).Pathes() {
+		fmt.Fprintf(c.out, "\t%s\n", path)
+	}
 	for _, t := range upgradeTargets {
 		upgradedPkg, err := c.installer.Install(&t)
 		if err != nil {
