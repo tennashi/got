@@ -24,6 +24,7 @@ COMMANDS:
    list     list installed packages
    enable   enable the specified executable
    disable  disable the specified executable
+   show     show the specified package
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
