@@ -13,8 +13,7 @@ type InstalledPackages []InstalledPackage
 func (p InstalledPackages) UpgradeTargets(isAll bool) []InstallPackage {
 	installPkgs := []InstallPackage{}
 	for _, pkg := range p {
-		// Upgrade latest only
-		if pkg.Version == "latest" {
+		if !pkg.IsPinned {
 			installPkgs = append(installPkgs, InstallPackage{
 				Path:    pkg.Path,
 				Version: "latest",

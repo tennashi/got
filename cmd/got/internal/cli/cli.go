@@ -32,6 +32,7 @@ func Run() int {
 			NewEnableCommand(),
 			NewDisableCommand(),
 			NewShowCommand(),
+			NewPinCommand(),
 		},
 	}
 
