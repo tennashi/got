@@ -22,6 +22,8 @@ COMMANDS:
    install  install the specified package
    upgrade  upgrade installed packages
    list     list installed packages
+   enable   enable the specified executable
+   disable  disable the specified executable
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
