@@ -27,6 +27,7 @@ COMMANDS:
    show     show the specified package
    pin      pin the version of specified package
    unpin    unpin the version of specified package
+   remove   remove the specified package
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
