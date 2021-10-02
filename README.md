@@ -25,6 +25,8 @@ COMMANDS:
    enable   enable the specified executable
    disable  disable the specified executable
    show     show the specified package
+   pin      pin the version of specified package
+   unpin    unpin the version of specified package
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
