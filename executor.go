@@ -101,6 +101,14 @@ func (e *Executor) Exec(cmdName string, args []string) error {
 	return nil
 }
 
+func (e *Executor) SetEnv(k, v string) {
+	e.debugL.Printf("start (*Executor).SetEnv(%v, %v)\n", k, v)
+
+	e.env[k] = []string{v}
+
+	e.debugL.Printf("end (*Executor).SetEnv(%v, %v)\n", k, v)
+}
+
 func (e *Executor) AddEnv(k, v string) {
 	e.debugL.Printf("start (*Executor).AddEnv(%v, %v)\n", k, v)
 

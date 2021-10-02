@@ -38,7 +38,7 @@ func (c *PackageInstaller) Install(pkg *InstallPackage) (*InstalledPackage, erro
 	c.debugL.Printf("start (*PackageInstaller).Install(%v)\n", pkg)
 
 	installPath := filepath.Join(c.baseDir, string(pkg.Path))
-	c.executor.AddEnv("GOBIN", installPath)
+	c.executor.SetEnv("GOBIN", installPath)
 	c.debugL.Printf("destination path: %s\n", installPath)
 
 	args := []string{"install", pkg.String()}
