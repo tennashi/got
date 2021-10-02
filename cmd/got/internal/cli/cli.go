@@ -34,6 +34,7 @@ func Run() int {
 			NewShowCommand(),
 			NewPinCommand(),
 			NewUnpinCommand(),
+			NewRemoveCommand(),
 		},
 	}
 

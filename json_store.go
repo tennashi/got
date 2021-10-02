@@ -93,3 +93,20 @@ func (s *JSONStore) Save(key string, v interface{}) error {
 
 	return jsonstore.Save(store, s.filePath)
 }
+
+func (s *JSONStore) Delete(key string) error {
+	s.debugL.Printf("start (*JSONStore).Delete(%s)\n", key)
+
+	store, err := jsonstore.Open(s.filePath)
+	if err != nil {
+		s.debugL.Printf("error occurred in jsonstore.Open(): %v\n", err)
+
+		return err
+	}
+
+	store.Delete(key)
+
+	s.debugL.Printf("end (*JSONStore).Delete(%s)\n", key)
+
+	return jsonstore.Save(store, s.filePath)
+}

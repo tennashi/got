@@ -106,3 +106,11 @@ func (r *InstalledPackageRepository) Save(pkg *InstalledPackage) error {
 
 	return r.store.Save(string(pkg.Path), pkg)
 }
+
+func (r *InstalledPackageRepository) Delete(pkg *InstalledPackage) error {
+	r.debugL.Printf("start (*InstalledPackageRepository).Save(%v)\n", pkg)
+
+	r.debugL.Printf("end (*InstalledPackageRepository).Save(%v)\n", pkg)
+
+	return r.store.Delete(string(pkg.Path))
+}
