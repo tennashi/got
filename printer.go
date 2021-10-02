@@ -30,7 +30,7 @@ func NewTablePrinter(ioStream *IOStream, cfg *TablePrinterConfig) *TablePrinter 
 func (p *TablePrinter) PrintInstalledPackages(pkgs []InstalledPackage) error {
 	defer p.writer.Flush()
 
-	fmt.Fprintln(p.writer, "NAME\tVERSION\tINSTALLED EXECUTABLES\t")
+	fmt.Fprintln(p.writer, "NAME\tVERSION\tINSTALLED EXECUTABLES\tIS PINNED")
 
 	for _, pkg := range pkgs {
 		executableNames := make([]string, 0, len(pkg.Executables))
@@ -45,6 +45,7 @@ func (p *TablePrinter) PrintInstalledPackages(pkgs []InstalledPackage) error {
 				string(pkg.Path),
 				pkg.Version,
 				strings.Join(executableNames, ","),
+				strconv.FormatBool(pkg.IsPinned),
 			}, "\t"))
 	}
 

@@ -29,6 +29,7 @@ func (p InstalledPackages) UpgradeTargets(isAll bool) []InstallPackage {
 type InstalledPackage struct {
 	Path        PackagePath
 	Version     string
+	IsPinned    bool
 	Executables []*Executable
 }
 

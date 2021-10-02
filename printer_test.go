@@ -18,8 +18,9 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 		{
 			input: []got.InstalledPackage{
 				{
-					Path:    "github.com/tennashi/got",
-					Version: "latest",
+					Path:     "github.com/tennashi/got",
+					Version:  "latest",
+					IsPinned: false,
 					Executables: []*got.Executable{
 						{
 							Name:    "got",
@@ -29,8 +30,9 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 					},
 				},
 				{
-					Path:    "github.com/tennashi/got-2",
-					Version: "latest",
+					Path:     "github.com/tennashi/got-2",
+					Version:  "latest",
+					IsPinned: false,
 					Executables: []*got.Executable{
 						{
 							Name:    "got-2-1",
@@ -45,8 +47,9 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 					},
 				},
 				{
-					Path:    "github.com/tennashi/got-3",
-					Version: "",
+					Path:     "github.com/tennashi/got-3",
+					Version:  "",
+					IsPinned: true,
 					Executables: []*got.Executable{
 						{
 							Name:    "got-3",
@@ -57,10 +60,10 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 				},
 			},
 			want: []string{
-				"NAME                       VERSION  INSTALLED EXECUTABLES  ",
-				"github.com/tennashi/got    latest   got",
-				"github.com/tennashi/got-2  latest   got-2-1,got-2-2",
-				"github.com/tennashi/got-3           got-3",
+				"NAME                       VERSION  INSTALLED EXECUTABLES  IS PINNED",
+				"github.com/tennashi/got    latest   got                    false",
+				"github.com/tennashi/got-2  latest   got-2-1,got-2-2        false",
+				"github.com/tennashi/got-3           got-3                  true",
 				"",
 			},
 			err: false,
@@ -68,7 +71,7 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 		{
 			input: []got.InstalledPackage{},
 			want: []string{
-				"NAME  VERSION  INSTALLED EXECUTABLES  ",
+				"NAME  VERSION  INSTALLED EXECUTABLES  IS PINNED",
 				"",
 			},
 			err: false,
@@ -76,7 +79,7 @@ func TestTablePrinter_PrintInstallPackages(t *testing.T) {
 		{
 			input: nil,
 			want: []string{
-				"NAME  VERSION  INSTALLED EXECUTABLES  ",
+				"NAME  VERSION  INSTALLED EXECUTABLES  IS PINNED",
 				"",
 			},
 			err: false,
