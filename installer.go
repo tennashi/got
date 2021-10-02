@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type PackageInstallerConfig struct {
@@ -63,10 +64,25 @@ func (c *PackageInstaller) Install(pkg *InstallPackage) (*InstalledPackage, erro
 		c.debugL.Printf("installed: %s\n", dirEntry.Name())
 	}
 
+	version := pkg.Version
+	if len(executables) != 0 {
+		stdout, err := c.executor.ExecBackground("go", []string{"version", "-m", executables[0].Path})
+		if err != nil {
+			c.debugL.Printf("error occurred in c.executor.ExecBackground(): %v\n", err)
+			return nil, err
+		}
+
+		for _, line := range strings.Split(stdout, "\n") {
+			if strings.HasPrefix(strings.TrimSpace(line), "mod") {
+				version = strings.Fields(line)[2]
+			}
+		}
+	}
+
 	c.debugL.Printf("end (*PackageInstaller).Install(%v)\n", pkg)
 	return &InstalledPackage{
 		Path:        pkg.Path,
-		Version:     pkg.Version,
+		Version:     version,
 		Executables: executables,
 	}, nil
 }

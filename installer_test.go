@@ -20,7 +20,7 @@ func TestPackageInstaller_Install(t *testing.T) {
 		t.Fatalf("should not be error but: %v", err)
 	}
 
-	input, err := got.NewInstallPackage("tennashi/got", true)
+	input, err := got.NewInstallPackage("tennashi/got@v0.1.8", true)
 	if err != nil {
 		t.Fatalf("should not be error but: %v", err)
 	}
@@ -31,8 +31,9 @@ func TestPackageInstaller_Install(t *testing.T) {
 	}
 
 	want := &got.InstalledPackage{
-		Path:    "github.com/tennashi/got",
-		Version: "latest",
+		Path:     "github.com/tennashi/got",
+		Version:  "v0.1.8",
+		IsPinned: false,
 		Executables: []*got.Executable{
 			{
 				Name:    "got",
