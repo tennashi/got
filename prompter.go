@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strconv"
 	"strings"
 )
 
@@ -54,6 +55,21 @@ func (p *Prompter) ChooseToForceOverwrite(destPath string) bool {
 	return isOverwrite
 }
 
+func (p *Prompter) SelectPackage(pkgs []InstalledPackage) *InstalledPackage {
+	p.debugL.Printf("start (*Prompter).SelectPackage(%v)\n", pkgs)
+
+	pkgNames := make([]string, 0, len(pkgs))
+	for _, pkg := range pkgs {
+		pkgNames = append(pkgNames, string(pkg.Path))
+	}
+
+	pkg := pkgs[p.Select("Please select a package", pkgNames, 0)]
+
+	p.debugL.Printf("end (*Prompter).SelectPackage(%v)\n", pkgs)
+
+	return &pkg
+}
+
 func (p *Prompter) AskYN(msg string) bool {
 	p.debugL.Printf("start (*Prompter).AskYN(%s)\n", msg)
 
@@ -77,4 +93,40 @@ func (p *Prompter) AskYN(msg string) bool {
 	p.debugL.Printf("end (*Prompter).AskYN(%s)\n", msg)
 
 	return strings.Contains("Yy", yn)
+}
+
+func (p *Prompter) Select(msg string, candidates []string, defaultIndex int) int {
+	p.debugL.Printf("start (*Prompter).Select(%s, %v, %d)\n", msg, candidates, defaultIndex)
+
+	if defaultIndex >= len(candidates) {
+		defaultIndex = len(candidates) - 1
+	}
+
+	for _, candidate := range candidates {
+		fmt.Fprintf(p.out, "\t%s\n", candidate)
+	}
+
+	fmt.Fprintf(p.out, "%s: ", msg)
+
+	input := ""
+	fmt.Fscan(p.in, &input)
+
+	if input == "" {
+		p.debugL.Printf("end (*Prompter).Select(%s, %v, %d)\n", msg, candidates, defaultIndex)
+
+		return defaultIndex
+	}
+
+	index, err := strconv.Atoi(input)
+	if err != nil || index >= len(candidates) {
+		fmt.Fprintf(p.out, "Invalid input: %s.\n", input)
+
+		p.debugL.Printf("end (*Prompter).Select(%s, %v, %d)\n", msg, candidates, defaultIndex)
+
+		return p.Select(msg, candidates, defaultIndex)
+	}
+
+	p.debugL.Printf("end (*Prompter).Select(%s, %v, %d)\n", msg, candidates, defaultIndex)
+
+	return index
 }

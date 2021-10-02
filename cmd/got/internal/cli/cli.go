@@ -29,6 +29,8 @@ func Run() int {
 			NewInstallCommand(),
 			NewUpgradeCommand(),
 			NewListCommand(),
+			NewEnableCommand(),
+			NewDisableCommand(),
 		},
 	}
 

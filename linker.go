@@ -78,3 +78,22 @@ func (l *ExecutableLinker) ForceLink(executable *Executable) error {
 	l.debugL.Printf("end (*ExecutableLinker).ForceLink(%v)\n", executable)
 	return nil
 }
+
+func (l *ExecutableLinker) Unlink(executable *Executable) error {
+	l.debugL.Printf("start (*ExecutableLinker).Unlink(%v)\n", executable)
+
+	if !executable.Disable {
+		l.debugL.Printf("skip unlink because it is enableed: %s\n", executable.Name)
+		return nil
+	}
+
+	destPath := filepath.Join(l.binDir, executable.Name)
+
+	if err := os.Remove(destPath); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	l.debugL.Printf("end (*ExecutableLinker).Unlink(%v)\n", executable)
+
+	return nil
+}
