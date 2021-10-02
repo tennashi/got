@@ -3,6 +3,7 @@ package got
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 )
@@ -44,6 +45,23 @@ func (p *TablePrinter) PrintInstalledPackages(pkgs []InstalledPackage) error {
 				string(pkg.Path),
 				pkg.Version,
 				strings.Join(executableNames, ","),
+			}, "\t"))
+	}
+
+	return nil
+}
+
+func (p *TablePrinter) PrintExecutables(execs []*Executable) error {
+	defer p.writer.Flush()
+
+	fmt.Fprintln(p.writer, "NAME\tPATH\tDISABLED\t")
+
+	for _, exec := range execs {
+		fmt.Fprintln(p.writer, strings.Join(
+			[]string{
+				exec.Name,
+				exec.Path,
+				strconv.FormatBool(exec.Disable),
 			}, "\t"))
 	}
 

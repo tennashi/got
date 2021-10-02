@@ -31,6 +31,7 @@ func Run() int {
 			NewListCommand(),
 			NewEnableCommand(),
 			NewDisableCommand(),
+			NewShowCommand(),
 		},
 	}
 
