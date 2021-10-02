@@ -11,7 +11,7 @@ import (
 func NewShowCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "show",
-		Usage: "show the specified executable",
+		Usage: "show the specified package",
 		Flags: []cli.Flag{
 			&cli.PathFlag{
 				Name:    "datadir",
