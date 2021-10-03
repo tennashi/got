@@ -61,12 +61,6 @@ func NewUpgradeCommand() *cli.Command {
 				}
 			}
 
-			if c.NArg() != 0 {
-				return &got.InvalidParamError{
-					Message: "no params required",
-				}
-			}
-
 			return nil
 		},
 		Action: func(c *cli.Context) error {
@@ -88,7 +82,8 @@ func NewUpgradeCommand() *cli.Command {
 				return err
 			}
 
-			return cmd.Run()
+			pkgName := c.Args().Get(0)
+			return cmd.Run(pkgName)
 		},
 	}
 }

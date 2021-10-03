@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 )
 
 type UpgradeCommandConfig struct {
@@ -67,13 +68,34 @@ func NewUpgradeCommand(ioStream *IOStream, cfg *UpgradeCommandConfig) (*UpgradeC
 	}, nil
 }
 
-func (c *UpgradeCommand) Run() error {
+func (c *UpgradeCommand) Run(pkgName string) error {
 	allPackages, err := c.repository.List()
 	if err != nil {
 		return err
 	}
 
-	upgradeTargets := InstalledPackages(allPackages).UpgradeTargets(c.installAllCommand)
+	var candidate []InstalledPackage
+	if pkgName != "" {
+
+		for _, pkg := range allPackages {
+			if strings.HasSuffix(string(pkg.Path), pkgName) {
+				candidate = append(candidate, pkg)
+			}
+		}
+
+		if len(candidate) == 0 {
+			return &PackageNotFoundError{Path: PackagePath(pkgName)}
+		}
+
+		if len(candidate) > 1 {
+			fmt.Fprintln(c.out, "Multiple installed packages with the specified name were found.")
+			candidate = []InstalledPackage{*c.prompter.SelectPackage(candidate)}
+		}
+	} else {
+		candidate = allPackages
+	}
+
+	upgradeTargets := InstalledPackages(candidate).UpgradeTargets(c.installAllCommand)
 
 	fmt.Fprintln(c.out, "This packages will be upgraded:")
 	for _, path := range InstallPackages(upgradeTargets).Pathes() {
